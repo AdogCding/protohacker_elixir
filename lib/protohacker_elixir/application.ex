@@ -10,12 +10,19 @@ defmodule ProtohackerElixir.Application do
     children = [
       {Task.Supervisor, name: ProtohackerElixir.Generic.TaskSupervisor},
       Supervisor.child_spec(
-        {ProtohackerElixir.Generic.Server, port: 10000, challenge: ProtohackerElixir.Echo.Worker},
+        {ProtohackerElixir.Generic.Server, port: 10002, challenge: ProtohackerElixir.Echo.Worker},
         id: :echo
       ),
       Supervisor.child_spec(
         {ProtohackerElixir.Generic.Server,
-         port: 10001, challenge: ProtohackerElixir.Prime.Worker, socket_opts: [packet: :line]},
+         port: 10001,
+         challenge: ProtohackerElixir.Prime.Worker,
+         socket_opts: [
+           :binary,
+           packet: :line,
+           active: false,
+           reuseaddr: true
+         ]},
         id: :prime
       )
     ]

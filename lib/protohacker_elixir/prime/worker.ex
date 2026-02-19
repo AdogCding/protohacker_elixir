@@ -2,18 +2,14 @@ defmodule ProtohackerElixir.Prime.Worker do
   use ProtohackerElixir.Generic.Challenge
 
   @impl true
-  def handle_connection(socket) do
-    start_link(socket)
-  end
-
-  @impl true
   def main_loop(socket) do
     case parse_request(socket) do
       {:ok, json} ->
         case json do
           {:ok, %{"method" => "isPrime", "number" => num}} when is_number(num) ->
-            response = prime?(num)
-            :gen_tcp.send(socket, Jason.encode!(%{"method" => "isPrime", "prime" => response}))
+            is_prime = prime?(num)
+            response = "#{Jason.encode!(%{"method" => "isPrime", "prime" => is_prime})}\n"
+            :gen_tcp.send(socket, response)
             main_loop(socket)
 
           _ ->

@@ -4,6 +4,11 @@ defmodule ProtohackerElixir.Generic.Challenge do
       @behaviour ProtohackerElixir.Generic.Challenge
       require Logger
 
+      @impl true
+      def handle_connection(socket) do
+        start_link(socket)
+      end
+
       def start_link(socket) do
         receive do
           :socket_transferred -> main_loop(socket)

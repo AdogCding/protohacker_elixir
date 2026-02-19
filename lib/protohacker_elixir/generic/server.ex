@@ -11,13 +11,7 @@ defmodule ProtohackerElixir.Generic.Server do
   def start_link(opts) do
     port = Keyword.get(opts, :port)
     challenge = Keyword.get(opts, :challenge)
-
-    socket_opts =
-      if Keyword.has_key?(opts, :socket_opts) do
-        Keyword.merge(@default_socket_opts, Keyword.get(opts, :socket_opts))
-      else
-        @default_socket_opts
-      end
+    socket_opts = Keyword.get(opts, :socket_opts, @default_socket_opts)
 
     GenServer.start_link(__MODULE__, %{port: port, challenge: challenge, socket_opts: socket_opts})
   end
@@ -25,6 +19,7 @@ defmodule ProtohackerElixir.Generic.Server do
   @impl true
   def init(init_args) do
     %{port: port, challenge: challenge, socket_opts: socket_opts} = init_args
+    Logger.debug("Start at #{port}")
 
     case :gen_tcp.listen(port, socket_opts) do
       {:ok, socket} -> {:ok, %{socket: socket, challenge: challenge}, {:continue, :accept_loop}}
