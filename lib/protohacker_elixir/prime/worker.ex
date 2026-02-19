@@ -19,6 +19,7 @@ defmodule ProtohackerElixir.Prime.Worker do
         end
 
       {:error, reason} ->
+        Logger.error("Error receiving data: #{inspect(reason)}")
         {:error, reason}
     end
   end
