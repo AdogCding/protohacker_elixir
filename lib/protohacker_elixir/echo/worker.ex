@@ -8,8 +8,6 @@ defmodule ProtohackerElixir.Echo.Worker do
   end
 
   def start_link(socket) do
-    Logger.debug("Start worker")
-
     receive do
       :socket_transferred ->
         main_loop(socket)
@@ -26,7 +24,6 @@ defmodule ProtohackerElixir.Echo.Worker do
         main_loop(client_socket)
 
       {:error, reason} ->
-        Logger.debug("Error: #{reason}")
         {:error, reason}
     end
   end
