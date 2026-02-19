@@ -13,7 +13,8 @@ defmodule ProtohackerElixir.Prime.Worker do
             :gen_tcp.send(socket, response)
             main_loop(socket)
 
-          _ ->
+          bad_json ->
+            Logger.error("Bad json: #{inspect(bad_json)}")
             :gen_tcp.send(socket, Jason.encode!(%{"error" => "Invalid request"}))
         end
 
