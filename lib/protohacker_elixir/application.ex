@@ -15,7 +15,7 @@ defmodule ProtohackerElixir.Application do
       ),
       Supervisor.child_spec(
         {ProtohackerElixir.Generic.Server,
-         port: 10001, challenge: ProtohackerElixir.Prime.Worker, socket_opts: []},
+         port: 10001, challenge: ProtohackerElixir.Prime.Worker, socket_opts: [packet: :line]},
         id: :prime
       )
     ]
