@@ -9,7 +9,7 @@ defmodule ProtohackerElixir.Application do
   def start(_type, _args) do
     children = [
       {Task.Supervisor, name: ProtohackerElixir.Echo.TaskSupervisor},
-      {ProtohackerElixir.Echo.Server, port: 8080}
+      {ProtohackerElixir.Echo.Server, port: 10000}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
