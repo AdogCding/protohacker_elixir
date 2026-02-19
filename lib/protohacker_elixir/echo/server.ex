@@ -25,11 +25,14 @@ defmodule ProtohackerElixir.Echo.Server do
   end
 
   @impl true
-  def handle_continue(:accept_loop, %{socket: socket}) do
-    with {:ok, client_socket} <- :gen_tcp.accept(socket, 1000),
+  def handle_continue(:accept_loop, state = %{socket: socket}) do
+    with {:ok, client_socket} <- :gen_tcp.accept(socket, 1000 * 60),
          {:ok, pid} <-
-           Task.Supervisor.start_child(ProtohackerElixir.Echo.TaskSupervisor, fn -> nil end) do
-      :gen_tcp.controlling_process(client_socket, pid)
+           Task.Supervisor.start_child(ProtohackerElixir.Echo.TaskSupervisor, fn ->
+             ProtohackerElixir.Echo.Worker.start_link(socket)
+           end),
+         {:ok, _} <- :gen_tcp.controlling_process(client_socket, pid) do
+      {:noreply, state}
     else
       {:error, reason} -> {:stop, reason}
     end
