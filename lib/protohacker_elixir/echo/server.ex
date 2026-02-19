@@ -29,10 +29,11 @@ defmodule ProtohackerElixir.Echo.Server do
     with {:ok, client_socket} <- :gen_tcp.accept(socket, 1000 * 60),
          {:ok, pid} <-
            Task.Supervisor.start_child(ProtohackerElixir.Echo.TaskSupervisor, fn ->
-             ProtohackerElixir.Echo.Worker.start_link(socket)
+             ProtohackerElixir.Echo.Worker.start_link(client_socket)
            end),
-         {:ok, _} <- :gen_tcp.controlling_process(client_socket, pid) do
-      {:noreply, state}
+         :ok <- :gen_tcp.controlling_process(client_socket, pid) do
+      send(pid, :socket_transferred)
+      {:noreply, state, {:continue, :accept_loop}}
     else
       {:error, reason} -> {:stop, reason}
     end
