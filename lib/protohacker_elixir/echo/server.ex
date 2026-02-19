@@ -1,8 +1,6 @@
 defmodule ProtohackerElixir.Echo.Server do
-  use GenServer
+  use GenServer, restart: :transient
   require Logger
-  @task_name Echo.Worker
-
 
   def start_link(opts) do
     port = Keyword.get(opts, :port, 1000)
@@ -12,25 +10,28 @@ defmodule ProtohackerElixir.Echo.Server do
   @impl true
   def init(init_args) do
     %{port: port} = init_args
+
     socket_opts = [
-      :binary, packet: :line, active: false, reuseaddr: true
+      :binary,
+      packet: :line,
+      active: false,
+      reuseaddr: true
     ]
+
     case :gen_tcp.listen(port, socket_opts) do
       {:ok, socket} -> {:ok, %{socket: socket}, {:continue, :accept_loop}}
       {:error, reason} -> {:stop, reason}
     end
   end
 
-
   @impl true
   def handle_continue(:accept_loop, %{socket: socket}) do
-    case :gen_tcp.accept(socket) do
-      {:ok, client_socket} ->
-        {:ok, pid} = Task.Supervisor.start_child(
-          ProtohackerElixir.Echo.TaskSupervisor,
-          fn -> ProtohackerElixir.Echo.Worker.work(client_socket) end
-        )
-        :gen_tcp.controlling_process(client_socket, )
+    with {:ok, client_socket} <- :gen_tcp.accept(socket, 1000),
+         {:ok, pid} <-
+           Task.Supervisor.start_child(ProtohackerElixir.Echo.TaskSupervisor, fn -> nil end) do
+      :gen_tcp.controlling_process(client_socket, pid)
+    else
+      {:error, reason} -> {:stop, reason}
     end
   end
 end
