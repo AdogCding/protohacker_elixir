@@ -8,8 +8,11 @@ defmodule ProtohackerElixir.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      {Task.Supervisor, name: ProtohackerElixir.Echo.TaskSupervisor},
-      {ProtohackerElixir.Echo.Server, port: 10000}
+      {Task.Supervisor, name: ProtohackerElixir.Generic.TaskSupervisor},
+      Supervisor.child_spec(
+        {ProtohackerElixir.Generic.Server, port: 10000, challenge: ProtohackerElixir.Echo.Worker},
+        id: :echo
+      )
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

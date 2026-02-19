@@ -1,5 +1,11 @@
 defmodule ProtohackerElixir.Echo.Worker do
+  @behaviour ProtohackerElixir.Generic.Challenge
   require Logger
+
+  @impl true
+  def handle_connection(socket) do
+    start_link(socket)
+  end
 
   def start_link(socket) do
     Logger.debug("Start worker")
