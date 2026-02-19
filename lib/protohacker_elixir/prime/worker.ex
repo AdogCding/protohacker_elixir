@@ -35,7 +35,7 @@ defmodule ProtohackerElixir.Prime.Worker do
   def prime?(2), do: true
 
   def prime?(n) when is_integer(n) do
-    not Enum.any?(3..trunc(:math.sqrt(n)), fn x -> rem(n, x) == 0 end)
+    not Enum.any?(3..trunc(:math.sqrt(n))//2, fn x -> rem(n, x) == 0 end)
   end
 
   def prime?(_), do: false
