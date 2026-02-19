@@ -13,7 +13,6 @@ defmodule ProtohackerElixir.Echo.Server do
 
     socket_opts = [
       :binary,
-      packet: :line,
       active: false,
       reuseaddr: true
     ]
@@ -32,6 +31,7 @@ defmodule ProtohackerElixir.Echo.Server do
              ProtohackerElixir.Echo.Worker.start_link(client_socket)
            end),
          :ok <- :gen_tcp.controlling_process(client_socket, pid) do
+      Logger.debug("Starting work")
       send(pid, :socket_transferred)
       {:noreply, state, {:continue, :accept_loop}}
     else
