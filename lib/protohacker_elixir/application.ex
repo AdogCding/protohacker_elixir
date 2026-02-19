@@ -15,7 +15,7 @@ defmodule ProtohackerElixir.Application do
       ),
       Supervisor.child_spec(
         {ProtohackerElixir.Generic.Server,
-         port: 10000,
+         port: 10002,
          challenge: ProtohackerElixir.Prime.Worker,
          socket_opts: [
            :binary,

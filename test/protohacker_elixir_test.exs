@@ -2,7 +2,8 @@ defmodule ProtohackerElixirTest do
   use ExUnit.Case
   doctest ProtohackerElixir
 
-  test "greets the world" do
-    assert ProtohackerElixir.hello() == :world
+  test "is prime" do
+    assert ProtohackerElixir.Prime.Helper.prime?(3) == true
+    assert ProtohackerElixir.Prime.Helper.prime?(4) == false
   end
 end

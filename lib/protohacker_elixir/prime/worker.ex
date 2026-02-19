@@ -1,5 +1,6 @@
 defmodule ProtohackerElixir.Prime.Worker do
   use ProtohackerElixir.Generic.Challenge
+  alias ProtohackerElixir.Prime.Helper
 
   @impl true
   def main_loop(socket) do
@@ -7,7 +8,7 @@ defmodule ProtohackerElixir.Prime.Worker do
       {:ok, json} ->
         case json do
           {:ok, %{"method" => "isPrime", "number" => num}} when is_number(num) ->
-            is_prime = prime?(num)
+            is_prime = Helper.prime?(num)
             response = "#{Jason.encode!(%{"method" => "isPrime", "prime" => is_prime})}\n"
             :gen_tcp.send(socket, response)
             main_loop(socket)
@@ -30,13 +31,4 @@ defmodule ProtohackerElixir.Prime.Worker do
         {:error, reason}
     end
   end
-
-  def prime?(n) when is_integer(n) and n < 2, do: false
-  def prime?(2), do: true
-
-  def prime?(n) when is_integer(n) do
-    not Enum.any?(3..trunc(:math.sqrt(n))//2, fn x -> rem(n, x) == 0 end)
-  end
-
-  def prime?(_), do: false
 end
