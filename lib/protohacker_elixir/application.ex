@@ -21,6 +21,7 @@ defmodule ProtohackerElixir.Application do
            :binary,
            packet: :line,
            active: false,
+           buffer: 1024 * 1024,
            reuseaddr: true
          ]},
         id: :prime
