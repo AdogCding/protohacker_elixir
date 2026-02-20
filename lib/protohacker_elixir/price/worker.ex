@@ -32,7 +32,13 @@ defmodule ProtohackerElixir.Price.Worker do
       end)
 
     sum = Enum.sum_by(matched_data, fn d -> d.price end)
-    div(sum, length(matched_data))
+    len_of_matched_data = length(matched_data)
+
+    if len_of_matched_data == 0 do
+      0
+    else
+      div(sum, length(len_of_matched_data))
+    end
   end
 
   @spec handle_bytes(binary()) :: {:I, PriceData.t()} | {:Q, MeanQuery.t()} | {:error, String.t()}
