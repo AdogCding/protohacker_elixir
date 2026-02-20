@@ -5,6 +5,11 @@ defmodule ProtohackerElixir.Generic.Challenge do
       require Logger
 
       @impl true
+      def main_loop(socket) do
+        main_loop(socket, [])
+      end
+
+      @impl true
       def handle_connection(socket) do
         start_link(socket)
       end
@@ -19,6 +24,8 @@ defmodule ProtohackerElixir.Generic.Challenge do
   end
 
   @callback main_loop(:gen_tcp.socket()) :: any()
+
+  @callback main_loop(:gen_tcp.socket(), list()) ::any
 
   @callback handle_connection(:gen_tcp.socket()) :: any()
 end

@@ -3,7 +3,7 @@ defmodule ProtohackerElixir.Prime.Worker do
   alias ProtohackerElixir.Prime.Helper
 
   @impl true
-  def main_loop(socket) do
+  def main_loop(socket, _) do
     case parse_request(socket) do
       {:ok, json} ->
         case json do
