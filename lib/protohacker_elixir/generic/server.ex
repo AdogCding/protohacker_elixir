@@ -19,7 +19,7 @@ defmodule ProtohackerElixir.Generic.Server do
   @impl true
   def init(init_args) do
     %{port: port, challenge: challenge, socket_opts: socket_opts} = init_args
-    Logger.debug("Start at #{port}")
+    Logger.debug("Start application at #{port}")
 
     case :gen_tcp.listen(port, socket_opts) do
       {:ok, socket} -> {:ok, %{socket: socket, challenge: challenge}, {:continue, :accept_loop}}
