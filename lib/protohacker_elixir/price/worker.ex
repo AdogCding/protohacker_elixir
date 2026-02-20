@@ -13,7 +13,7 @@ defmodule ProtohackerElixir.Price.Worker do
 
           {:Q, query} ->
             res = search_period(query, prices)
-            :gen_tcp.send(socket, <<res>>)
+            :gen_tcp.send(socket, <<res::big-integer-size(32)>>)
             Logger.debug("query #{inspect(query)}")
             main_loop(socket, prices)
 
