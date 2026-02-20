@@ -8,9 +8,11 @@ defmodule ProtohackerElixir.Price.Worker do
       {:ok, data} ->
         case handle_bytes(data) do
           {:I, price} ->
+            Logger.debug("insert #{inspect(price)}")
             main_loop(socket, [price])
 
           {:Q, query} ->
+            Logger.debug("query #{inspect(query)}")
             res = search_period(query, prices)
             :gen_tcp.send(socket, <<res>>)
             main_loop(socket, prices)
@@ -37,7 +39,7 @@ defmodule ProtohackerElixir.Price.Worker do
     if len_of_matched_data == 0 do
       0
     else
-      div(sum, length(len_of_matched_data))
+      div(sum, len_of_matched_data)
     end
   end
 
