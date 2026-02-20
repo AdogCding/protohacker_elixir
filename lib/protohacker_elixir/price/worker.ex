@@ -9,12 +9,12 @@ defmodule ProtohackerElixir.Price.Worker do
         case handle_bytes(data) do
           {:I, price} ->
             Logger.debug("insert #{inspect(price)}")
-            main_loop(socket, [price])
+            main_loop(socket, [price | prices])
 
           {:Q, query} ->
-            Logger.debug("query #{inspect(query)}")
             res = search_period(query, prices)
             :gen_tcp.send(socket, <<res>>)
+            Logger.debug("query #{inspect(query)}")
             main_loop(socket, prices)
 
           {:error, reason} ->
