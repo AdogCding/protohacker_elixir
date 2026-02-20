@@ -4,7 +4,7 @@ defmodule ProtohackerElixir.Price.Worker do
   use ProtohackerElixir.Generic.Challenge
 
   def main_loop(socket, prices) do
-    case :gen_tcp.recv(socket, 9) do
+    case :gen_tcp.recv(socket, 9, 1000) do
       {:ok, data} ->
         case handle_bytes(data) do
           {:I, price} ->
