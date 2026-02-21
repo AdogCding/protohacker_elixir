@@ -1,7 +1,7 @@
-defmodule ProtohackerElixir.Generic.Challenge do
+defmodule ProtohackerElixir.Generic.SimpleChallenge do
   defmacro __using__(_) do
     quote do
-      @behaviour ProtohackerElixir.Generic.Challenge
+      @behaviour ProtohackerElixir.Generic.SimpleChallenge
       require Logger
 
       @impl true
@@ -25,7 +25,7 @@ defmodule ProtohackerElixir.Generic.Challenge do
 
   @callback main_loop(:gen_tcp.socket()) :: any()
 
-  @callback main_loop(:gen_tcp.socket(), list()) ::any
+  @callback main_loop(:gen_tcp.socket(), list()) :: any
 
   @callback handle_connection(:gen_tcp.socket()) :: any()
 end

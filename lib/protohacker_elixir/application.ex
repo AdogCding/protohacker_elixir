@@ -9,6 +9,7 @@ defmodule ProtohackerElixir.Application do
   def start(_type, _args) do
     children = [
       {Task.Supervisor, name: ProtohackerElixir.Generic.TaskSupervisor},
+      {DynamicSupervisor, name: ProtohackerElixir.Generic.DynamicSupervisor},
       Supervisor.child_spec(
         {ProtohackerElixir.Generic.Server, port: 10001, challenge: ProtohackerElixir.Echo.Worker},
         id: :echo

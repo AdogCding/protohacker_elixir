@@ -1,5 +1,5 @@
 defmodule ProtohackerElixir.Echo.Worker do
-  use ProtohackerElixir.Generic.Challenge
+  use ProtohackerElixir.Generic.SimpleChallenge
 
   @impl true
   def main_loop(client_socket, state) do

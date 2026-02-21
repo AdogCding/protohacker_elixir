@@ -1,7 +1,7 @@
 defmodule ProtohackerElixir.Price.Worker do
   alias ProtohackerElixir.Price.MeanQuery
   alias ProtohackerElixir.Price.PriceData
-  use ProtohackerElixir.Generic.Challenge
+  use ProtohackerElixir.Generic.SimpleChallenge
 
   def main_loop(socket, prices) do
     case :gen_tcp.recv(socket, 9, 100_000) do
