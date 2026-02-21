@@ -24,12 +24,18 @@ defmodule ProtohackerElixir.Generic.Server do
 
   @impl true
   def init(init_args) do
-    %{port: port, challenge: challenge, socket_opts: socket_opts} = init_args
-    Logger.debug("Start application at #{port}")
+    %{port: port, challenge: challenge, socket_opts: socket_opts, task_type: task_type} =
+      init_args
+
+    Logger.debug("Start #{inspect(challenge)} application at #{port}")
 
     case :gen_tcp.listen(port, socket_opts) do
-      {:ok, socket} -> {:ok, %{socket: socket, challenge: challenge}, {:continue, :accept_loop}}
-      {:error, reason} -> {:stop, reason}
+      {:ok, socket} ->
+        {:ok, %{socket: socket, challenge: challenge, task_type: task_type},
+         {:continue, :accept_loop}}
+
+      {:error, reason} ->
+        {:stop, reason}
     end
   end
 
@@ -39,7 +45,6 @@ defmodule ProtohackerElixir.Generic.Server do
          {:ok, pid} <-
            start_task(client_socket, state),
          :ok <- :gen_tcp.controlling_process(client_socket, pid) do
-      Logger.debug("Starting work")
       send(pid, :socket_transferred)
       {:noreply, state, {:continue, :accept_loop}}
     else
@@ -54,7 +59,7 @@ defmodule ProtohackerElixir.Generic.Server do
   end
 
   defp start_task(client_socket, init_args = %{task_type: :dynamic, challenge: challenge}) do
-    child_args = Map.put(init_args, client_socket, client_socket)
+    child_args = Map.put(init_args, :client_socket, client_socket)
 
     DynamicSupervisor.start_child(
       ProtohackerElixir.Generic.DynamicSupervisor,

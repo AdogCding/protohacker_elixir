@@ -37,6 +37,18 @@ defmodule ProtohackerElixir.Application do
            reuseaddr: true
          ]},
         id: :price
+      ),
+      Supervisor.child_spec(
+        {ProtohackerElixir.Generic.Server,
+         port: 10004,
+         challenge: ProtohackerElixir.Budget.Client,
+         task_type: :dynamic,
+         socket_opts: [
+           :binary,
+           active: false,
+           reuseaddr: true
+         ]},
+        id: :budget_client
       )
     ]
 

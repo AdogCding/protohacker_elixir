@@ -1,8 +1,20 @@
 defmodule ProtohackerElixir.Budget.Client do
   @behaviour :gen_statem
+  require Logger
 
+  @spec start_link(any()) :: :ignore | {:error, any()} | {:ok, pid()}
   def start_link(state) do
     :gen_statem.start_link(__MODULE__, state, [])
+  end
+
+  def child_spec(args) do
+    Logger.debug("Client child_spec: #{inspect(args)}")
+
+    %{
+      id: __MODULE__,
+      start: {__MODULE__, :start_link, [args]},
+      restart: :transient
+    }
   end
 
   def callback_mode do
