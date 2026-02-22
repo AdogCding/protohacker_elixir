@@ -31,7 +31,7 @@ defmodule ProtohackerElixir.Budget.Client do
 
   def handle_event(:internal, :send_welcome_and_await_name, :ready, data) do
     %{client_socket: client_socket} = data
-    :gen_tcp.send(client_socket, "Welcome to budgetchat! What shall I call you?")
+    :gen_tcp.send(client_socket, "Welcome to budgetchat! What shall I call you?\n")
     {:next_state, :awaiting_name, data, [{:next_event, :internal, :await_name}]}
   end
 
