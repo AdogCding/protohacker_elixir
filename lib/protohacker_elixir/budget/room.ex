@@ -1,4 +1,5 @@
 defmodule ProtohackerElixir.Budget.Room do
+  alias ProtohackerElixir.Budget.User
   alias ProtohackerElixir.Budget.Chat
   use GenServer
 
@@ -12,15 +13,19 @@ defmodule ProtohackerElixir.Budget.Room do
     {:ok, %Chat{}}
   end
 
-  def join(client_pid, name) do
-    GenServer.cast(__MODULE__, {:join, client_pid, name})
+  @spec join(User.t()) :: term()
+  def join(user) do
+    GenServer.cast(__MODULE__, {:join, user})
   end
 
-  def send_message(name, message) do
-    GenServer.cast(__MODULE__, {:send_message, name, message})
+  @spec send_message(User.t(), String.t()) :: term()
+  def send_message(user, message) do
+    GenServer.cast(__MODULE__, {:send_message, user, message})
   end
 
-  def leave(name) do
-    
+  @spec leave(User.t()) :: term()
+  def leave(user) do
+    GenServer.call(__MODULE__, {:leave, user})
   end
+
 end
