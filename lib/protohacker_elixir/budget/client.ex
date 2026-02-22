@@ -1,4 +1,5 @@
 defmodule ProtohackerElixir.Budget.Client do
+  alias ProtohackerElixir.Budget.User
   @behaviour :gen_statem
   require Logger
 
@@ -44,7 +45,7 @@ defmodule ProtohackerElixir.Budget.Client do
       {:ok, data} ->
         name = data |> String.trim()
 
-        if(String.length(name) <= 0) do
+        if(User.valid_name?(name)) do
           {:next_state, :killed, state, [{:next_event, :internal, :kill}]}
         else
           {:next_state, :joined, Map.put(state, :name, name),
