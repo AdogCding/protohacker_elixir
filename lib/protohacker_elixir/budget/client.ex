@@ -1,4 +1,6 @@
 defmodule ProtohackerElixir.Budget.Client do
+  alias ProtohackerElixir.Generic.Tools
+  alias ProtohackerElixir.Budget.Room
   alias ProtohackerElixir.Budget.User
   @behaviour :gen_statem
   require Logger
@@ -46,10 +48,12 @@ defmodule ProtohackerElixir.Budget.Client do
         name = data |> String.trim()
 
         if(User.valid_name?(name)) do
-          {:next_state, :killed, state, [{:next_event, :internal, :kill}]}
+          user = %User{name: name, pid: self(), id: Tools.uuid()}
+          Room.join(user)
+
+          {:next_state, :joined, Map.put(state, :user, user)}
         else
-          {:next_state, :joined, Map.put(state, :name, name),
-           [{:next_event, :internal, :broadcast_my_join}]}
+          {:next_state, :killed, state, [{:next_event, :internal, :kill}]}
         end
 
       {:error, reason} ->
@@ -97,6 +101,11 @@ defmodule ProtohackerElixir.Budget.Client do
       "Client entering state #{inspect(currentState)} from #{inspect(oldState)} with data #{inspect(data)}"
     )
 
+    {:keep_state_and_data, []}
+  end
+
+  def handle_event(:cast, {:recv_msg, message}, currentState, data) do
+    Logger.debug("Client receive #{message} on state #{currentState} with data #{inspect(data)}")
     {:keep_state_and_data, []}
   end
 end

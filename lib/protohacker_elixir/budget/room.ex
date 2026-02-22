@@ -19,6 +19,10 @@ defmodule ProtohackerElixir.Budget.Room do
     GenServer.cast(__MODULE__, {:join, user})
   end
 
+  def broadcast_message(sender, message) do
+    GenServer.cast(__MODULE__, {:send_message, sender, message})
+  end
+
   @spec send_message(User.t(), String.t()) :: term()
   def send_message(user, message) do
     GenServer.cast(__MODULE__, {:send_message, user, message})
