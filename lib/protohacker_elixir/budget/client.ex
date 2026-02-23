@@ -51,7 +51,7 @@ defmodule ProtohackerElixir.Budget.Client do
          user = %User{name: name, pid: self(), id: Tools.uuid()},
          :ok <- Room.join(user) do
       {:next_state, :joined, Map.put(state, :user, user),
-       [{:next_event, :internal, :waiting_further_msg}]}
+       [{:next_event, :internal, :waiting_for_message}]}
     else
       _ -> {:next_state, :killed, state, [{:next_event, :internal, :kill}]}
     end
@@ -74,18 +74,18 @@ defmodule ProtohackerElixir.Budget.Client do
     {:keep_state_and_data, []}
   end
 
-  def handle_event(:internal, :waiting_further_msg, :joined, state) do
+  def handle_event(:internal, :waiting_for_message, :joined, state) do
     %{client_socket: client_socket} = state
 
-    case :gen_tcp.recv(client_socket, 0) do
-      {:ok, data} ->
-        Logger.debug("Received data from client: #{inspect(data)}")
-        {:keep_state_and_data, []}
+    case :inet.setopts(client_socket, [{:active, :once}]) do
+      :ok ->
+        Logger.debug("Set client socket to active once")
 
       {:error, reason} ->
-        Logger.error("Error receiving data from client: #{inspect(reason)}")
-        {:next_state, :killed, state, [{:next_event, :internal, :kill}]}
+        Logger.error("Failed to set client socket to active once: #{inspect(reason)}")
     end
+
+    {:keep_state_and_data, []}
   end
 
   def handle_event(:internal, :kill, :killed, data) do
@@ -94,19 +94,6 @@ defmodule ProtohackerElixir.Budget.Client do
     Room.leave(user)
     :gen_tcp.close(client_socket)
     {:stop, :normal, data}
-  end
-
-  def handle_event(:info, :socket_transferred, _currentState, data) do
-    Logger.debug("Client handle_event :info: :socket_transferred, #{inspect(data)}")
-    {:next_state, :ready, data, [{:next_event, :internal, :send_welcome_and_await_name}]}
-  end
-
-  def handle_event(:info, info, currentState, data) do
-    Logger.debug(
-      "Client handle_event :info: #{inspect(info)}, #{inspect(currentState)}, #{inspect(data)}"
-    )
-
-    {:keep_state_and_data, []}
   end
 
   def handle_event(:enter, oldState, currentState, data) do
@@ -119,6 +106,32 @@ defmodule ProtohackerElixir.Budget.Client do
 
   def handle_event(:cast, {:recv_msg, message}, currentState, data) do
     Logger.debug("Client receive #{message} on state #{currentState} with data #{inspect(data)}")
+    {:keep_state_and_data, []}
+  end
+
+  def handle_event(:info, :socket_transferred, _currentState, data) do
+    Logger.debug("Client handle_event :info: :socket_transferred, #{inspect(data)}")
+    {:next_state, :ready, data, [{:next_event, :internal, :send_welcome_and_await_name}]}
+  end
+
+  def handle_event(:info, {:tcp, socket, data}, :joined, _) do
+    Logger.debug("Received message: #{data}")
+    :inet.setopts(socket, [{:active, :once}])
+    {:keep_state_and_data, []}
+  end
+
+  def handle_event(:info, {:tcp_closed, _socket}, :joined, data) do
+    Logger.debug("Tcp closed")
+    %{user: user} = data
+    Room.leave(user)
+    {:stop, :normal, data}
+  end
+
+  def handle_event(:info, info, currentState, data) do
+    Logger.debug(
+      "Client handle_event :info: #{inspect(info)}, #{inspect(currentState)}, #{inspect(data)}"
+    )
+
     {:keep_state_and_data, []}
   end
 end

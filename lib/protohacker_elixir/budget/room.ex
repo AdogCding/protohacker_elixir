@@ -78,17 +78,4 @@ defmodule ProtohackerElixir.Budget.Room do
     new_clients = Map.delete(clients, user.id)
     {:reply, :ok, %{state | clients: new_clients}}
   end
-
-  defp recv_msg(pid, client_socket) do
-    case :gen_tcp.recv(client_socket, 0) do
-      {:ok, data} ->
-        Logger.debug("Receive message: #{inspect(data)}")
-        :gen_statem.cast(pid, {:ok, data |> String.trim()})
-        recv_msg(pid, client_socket)
-
-      {:error, reason} ->
-        Logger.error("Error:#{inspect(reason)}")
-        :gen_statem.cast(pid, {:error, reason})
-    end
-  end
 end
