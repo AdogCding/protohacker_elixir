@@ -1,5 +1,6 @@
 defmodule ProtohackerElixir.Budget.Room do
   @moduledoc false
+  alias ProtohackerElixir.Budget.Message
   alias ProtohackerElixir.Budget.User
   alias ProtohackerElixir.Budget.Chat
   use GenServer
@@ -17,7 +18,9 @@ defmodule ProtohackerElixir.Budget.Room do
 
   @spec join(User.t()) :: term()
   def join(user) do
-    GenServer.call(__MODULE__, {:join, user})
+    join_res = GenServer.call(__MODULE__, {:join, user})
+    broadcast_welcome_message(user)
+    join_res
   end
 
   @spec get_room_members(User.t()) :: {:ok, list(User.t())} | {:error, term()}
@@ -32,14 +35,23 @@ defmodule ProtohackerElixir.Budget.Room do
     end
   end
 
+  defp broadcast_welcome_message(sender) do
+    send_message(sender, Message.Welcome.new(sender))
+  end
+
+  defp broadcast_goodbye_message(sender) do
+    send_message(sender, Message.GoodBye.new(sender))
+  end
+
   @spec send_message(User.t(), String.t()) :: term()
   def send_message(sender, message) do
-    GenServer.cast(__MODULE__, {:send_message, sender, message})
+    GenServer.call(__MODULE__, {:send_message, sender, message})
   end
 
   @spec leave(User.t()) :: term()
   def leave(user) do
     GenServer.call(__MODULE__, {:leave, user})
+    broadcast_goodbye_message(user)
   end
 
   @impl true
@@ -53,7 +65,7 @@ defmodule ProtohackerElixir.Budget.Room do
   end
 
   def handle_call({:send_message, sender, message}, _from, state) do
-    %{clients: clients, messages: _messages} = state
+    %{clients: clients} = state
     %{id: sender_id} = sender
 
     Map.values(clients)
@@ -69,6 +81,8 @@ defmodule ProtohackerElixir.Budget.Room do
           :gen_statem.cast(pid, {:recv_msg, message})
       end
     end)
+
+    {:reply, :ok, state}
   end
 
   @impl true

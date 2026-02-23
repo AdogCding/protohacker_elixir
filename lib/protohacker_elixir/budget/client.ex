@@ -106,6 +106,8 @@ defmodule ProtohackerElixir.Budget.Client do
 
   def handle_event(:cast, {:recv_msg, message}, currentState, data) do
     Logger.debug("Client receive #{message} on state #{currentState} with data #{inspect(data)}")
+    %{client_socket: client_socket} = data
+    :gen_tcp.send(client_socket, message)
     {:keep_state_and_data, []}
   end
 
@@ -114,8 +116,11 @@ defmodule ProtohackerElixir.Budget.Client do
     {:next_state, :ready, data, [{:next_event, :internal, :send_welcome_and_await_name}]}
   end
 
-  def handle_event(:info, {:tcp, socket, data}, :joined, _) do
+  def handle_event(:info, {:tcp, socket, data}, :joined, state) do
     Logger.debug("Received message: #{data}")
+    %{user: user} = state
+    chat_message = Message.ChatMessage.new(user, data |> String.trim())
+    Room.send_message(user, chat_message)
     :inet.setopts(socket, [{:active, :once}])
     {:keep_state_and_data, []}
   end
