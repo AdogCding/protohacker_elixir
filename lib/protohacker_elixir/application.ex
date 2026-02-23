@@ -13,35 +13,6 @@ defmodule ProtohackerElixir.Application do
       {ProtohackerElixir.Budget.Room, []},
       Supervisor.child_spec(
         {ProtohackerElixir.Generic.Server,
-         port: 10_001, challenge: ProtohackerElixir.Echo.Worker},
-        id: :echo
-      ),
-      Supervisor.child_spec(
-        {ProtohackerElixir.Generic.Server,
-         port: 10_002,
-         challenge: ProtohackerElixir.Prime.Worker,
-         socket_opts: [
-           :binary,
-           packet: :line,
-           active: false,
-           buffer: 1024 * 1024,
-           reuseaddr: true
-         ]},
-        id: :prime
-      ),
-      Supervisor.child_spec(
-        {ProtohackerElixir.Generic.Server,
-         port: 10_003,
-         challenge: ProtohackerElixir.Price.Worker,
-         socket_opts: [
-           :binary,
-           active: false,
-           reuseaddr: true
-         ]},
-        id: :price
-      ),
-      Supervisor.child_spec(
-        {ProtohackerElixir.Generic.Server,
          port: 10_004,
          challenge: ProtohackerElixir.Budget.Client,
          task_type: :dynamic,

@@ -49,8 +49,9 @@ defmodule ProtohackerElixir.Budget.Client do
          name = data |> String.trim(),
          {:is_name_valid, true} <- {:is_name_valid, User.valid_name?(name)},
          user = %User{name: name, pid: self(), id: Tools.uuid()},
-         {:ok} <- Room.join(user) do
-      {:next_state, :joined, state}
+         :ok <- Room.join(user) do
+      {:next_state, :joined, Map.put(state, :user, user),
+       [{:next_event, :internal, :waiting_further_msg}]}
     else
       _ -> {:next_state, :killed, state, [{:next_event, :internal, :kill}]}
     end
@@ -62,7 +63,7 @@ defmodule ProtohackerElixir.Budget.Client do
 
     case Room.get_room_members(user) do
       {:ok, members} ->
-        Logger.debug("Get room members: #{members}")
+        Logger.debug("Get room members: #{inspect(members)}")
         pn = Message.PresenceNotification.new(members)
         :gen_tcp.send(client_socket, pn)
 
@@ -73,7 +74,7 @@ defmodule ProtohackerElixir.Budget.Client do
     {:keep_state_and_data, []}
   end
 
-  def handle_event(:internal, :join, :joined, state) do
+  def handle_event(:internal, :waiting_further_msg, :joined, state) do
     %{client_socket: client_socket} = state
 
     case :gen_tcp.recv(client_socket, 0) do
@@ -89,7 +90,8 @@ defmodule ProtohackerElixir.Budget.Client do
 
   def handle_event(:internal, :kill, :killed, data) do
     Logger.debug("Client is going to be killed")
-    %{client_socket: client_socket} = data
+    %{client_socket: client_socket, user: user} = data
+    Room.leave(user)
     :gen_tcp.close(client_socket)
     {:stop, :normal, data}
   end
