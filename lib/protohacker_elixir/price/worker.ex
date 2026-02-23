@@ -1,4 +1,5 @@
 defmodule ProtohackerElixir.Price.Worker do
+  @moduledoc false
   alias ProtohackerElixir.Price.MeanQuery
   alias ProtohackerElixir.Price.PriceData
   use ProtohackerElixir.Generic.SimpleChallenge

@@ -1,4 +1,5 @@
 defmodule ProtohackerElixir.Echo.Worker do
+  @moduledoc false
   use ProtohackerElixir.Generic.SimpleChallenge
 
   @impl true

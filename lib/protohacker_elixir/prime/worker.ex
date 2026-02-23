@@ -1,4 +1,5 @@
 defmodule ProtohackerElixir.Prime.Worker do
+  @moduledoc false
   use ProtohackerElixir.Generic.SimpleChallenge
   alias ProtohackerElixir.Prime.Helper
 

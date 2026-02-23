@@ -1,4 +1,5 @@
 defmodule ProtohackerElixir.Generic.Server do
+  @moduledoc false
   use GenServer, restart: :transient
   require Logger
 

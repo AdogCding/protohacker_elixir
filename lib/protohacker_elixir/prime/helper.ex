@@ -1,4 +1,5 @@
 defmodule ProtohackerElixir.Prime.Helper do
+  @moduledoc false
   def prime?(n) when is_integer(n) and n < 2, do: false
   def prime?(2), do: true
 

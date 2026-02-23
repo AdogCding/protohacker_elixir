@@ -1,4 +1,5 @@
 defmodule ProtohackerElixir.Budget.User do
+  @moduledoc false
   defstruct name: nil, id: nil, pid: nil
 
   @type t :: %__MODULE__{

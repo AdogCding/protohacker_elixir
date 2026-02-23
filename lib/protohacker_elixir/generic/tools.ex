@@ -1,4 +1,5 @@
 defmodule ProtohackerElixir.Generic.Tools do
+  @moduledoc false
   def uuid() do
     uuid(:lower)
   end

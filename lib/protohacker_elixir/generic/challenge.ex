@@ -1,4 +1,5 @@
 defmodule ProtohackerElixir.Generic.SimpleChallenge do
+  @moduledoc false
   defmacro __using__(_) do
     quote do
       @behaviour ProtohackerElixir.Generic.SimpleChallenge

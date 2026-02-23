@@ -1,7 +1,12 @@
 defmodule ProtohackerElixir.Budget.Message do
+  @moduledoc false
   alias ProtohackerElixir.Budget.User
-  @spec createPresenceNotification([User.t()]) :: String.t()
-  def createPresenceNotification(users) do
-    "* The room contains: #{users |> Enum.map(& &1.name) |> Enum.join(", ")}\n"
+
+  defmodule PresenceNotification do
+    @moduledoc false
+    @spec new([User.t()]) :: String.t()
+    def new(users) do
+      "* The room contains: #{users |> Enum.map_join(",", fn u -> u.name end)}\n"
+    end
   end
 end

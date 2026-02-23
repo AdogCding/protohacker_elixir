@@ -1,4 +1,6 @@
 defmodule ProtohackerElixir.Budget.Client do
+  @moduledoc false
+  alias ProtohackerElixir.Budget.Message
   alias ProtohackerElixir.Generic.Tools
   alias ProtohackerElixir.Budget.Room
   alias ProtohackerElixir.Budget.User
@@ -43,23 +45,32 @@ defmodule ProtohackerElixir.Budget.Client do
         :awaiting_name,
         state = %{client_socket: client_socket}
       ) do
-    case :gen_tcp.recv(client_socket, 0) do
-      {:ok, data} ->
-        name = data |> String.trim()
+    with {:recv_data, {:ok, data}} <- {:recv_data, :gen_tcp.recv(client_socket, 0)},
+         name = data |> String.trim(),
+         {:is_name_valid, true} <- {:is_name_valid, User.valid_name?(name)},
+         user = %User{name: name, pid: self(), id: Tools.uuid()},
+         {:ok} <- Room.join(user) do
+      {:next_state, :joined, state}
+    else
+      _ -> {:next_state, :killed, state, [{:next_event, :internal, :kill}]}
+    end
+  end
 
-        if(User.valid_name?(name)) do
-          user = %User{name: name, pid: self(), id: Tools.uuid()}
-          Room.join(user)
+  def handle_event(:enter, _, :joined, state) do
+    %{user: user, client_socket: client_socket} = state
+    Logger.debug("User enter join state: #{inspect(user)}")
 
-          {:next_state, :joined, Map.put(state, :user, user)}
-        else
-          {:next_state, :killed, state, [{:next_event, :internal, :kill}]}
-        end
+    case Room.get_room_members(user) do
+      {:ok, members} ->
+        Logger.debug("Get room members: #{members}")
+        pn = Message.PresenceNotification.new(members)
+        :gen_tcp.send(client_socket, pn)
 
       {:error, reason} ->
-        Logger.error("Error receiving data from client: #{inspect(reason)}")
-        {:next_state, :killed, state, [{:next_event, :internal, :kill}]}
+        Logger.error("Get room member fail: #{inspect(reason)}")
     end
+
+    {:keep_state_and_data, []}
   end
 
   def handle_event(:internal, :join, :joined, state) do

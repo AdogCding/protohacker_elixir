@@ -10,13 +10,15 @@ defmodule ProtohackerElixir.Application do
     children = [
       {Task.Supervisor, name: ProtohackerElixir.Generic.TaskSupervisor},
       {DynamicSupervisor, name: ProtohackerElixir.Generic.DynamicSupervisor},
+      {ProtohackerElixir.Budget.Room, []},
       Supervisor.child_spec(
-        {ProtohackerElixir.Generic.Server, port: 10001, challenge: ProtohackerElixir.Echo.Worker},
+        {ProtohackerElixir.Generic.Server,
+         port: 10_001, challenge: ProtohackerElixir.Echo.Worker},
         id: :echo
       ),
       Supervisor.child_spec(
         {ProtohackerElixir.Generic.Server,
-         port: 10002,
+         port: 10_002,
          challenge: ProtohackerElixir.Prime.Worker,
          socket_opts: [
            :binary,
@@ -29,7 +31,7 @@ defmodule ProtohackerElixir.Application do
       ),
       Supervisor.child_spec(
         {ProtohackerElixir.Generic.Server,
-         port: 10003,
+         port: 10_003,
          challenge: ProtohackerElixir.Price.Worker,
          socket_opts: [
            :binary,
@@ -40,11 +42,12 @@ defmodule ProtohackerElixir.Application do
       ),
       Supervisor.child_spec(
         {ProtohackerElixir.Generic.Server,
-         port: 10004,
+         port: 10_004,
          challenge: ProtohackerElixir.Budget.Client,
          task_type: :dynamic,
          socket_opts: [
            :binary,
+           packet: :line,
            active: false,
            reuseaddr: true
          ]},

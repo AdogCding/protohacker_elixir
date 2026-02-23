@@ -1,4 +1,5 @@
 defmodule ProtohackerElixir.Budget.Room do
+  @moduledoc false
   alias ProtohackerElixir.Budget.User
   alias ProtohackerElixir.Budget.Chat
   use GenServer
@@ -16,16 +17,24 @@ defmodule ProtohackerElixir.Budget.Room do
 
   @spec join(User.t()) :: term()
   def join(user) do
-    GenServer.cast(__MODULE__, {:join, user})
+    GenServer.call(__MODULE__, {:join, user})
   end
 
-  def broadcast_message(sender, message) do
-    GenServer.cast(__MODULE__, {:send_message, sender, message})
+  @spec get_room_members(User.t()) :: {:ok, list(User.t())} | {:error, term()}
+  def get_room_members(newbee) do
+    case GenServer.call(__MODULE__, {:get_room_state}) do
+      {:ok, %Chat{clients: clients}} ->
+        Logger.debug("Gotten room member: #{inspect(clients)}")
+        {:ok, clients |> Map.values() |> Enum.filter(fn c -> c.id != newbee.id end)}
+
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
   @spec send_message(User.t(), String.t()) :: term()
-  def send_message(user, message) do
-    GenServer.cast(__MODULE__, {:send_message, user, message})
+  def send_message(sender, message) do
+    GenServer.cast(__MODULE__, {:send_message, sender, message})
   end
 
   @spec leave(User.t()) :: term()
@@ -37,6 +46,10 @@ defmodule ProtohackerElixir.Budget.Room do
   def handle_call({:join, user}, _from, state) do
     new_clients = Map.put(state.clients, user.id, user)
     {:reply, :ok, %{state | clients: new_clients}}
+  end
+
+  def handle_call({:get_room_state}, _from, state) do
+    {:reply, {:ok, state}, state}
   end
 
   def handle_call({:send_message, sender, message}, _from, state) do

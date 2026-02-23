@@ -9,17 +9,17 @@ defmodule ProtohackerElixirTest do
 
   test "price" do
     {:ok, socket} =
-      :gen_tcp.connect(~c"localhost", 10003, [
+      :gen_tcp.connect(~c"localhost", 10_003, [
         :binary,
         packet: :raw,
         active: false
       ])
 
     price = 100
-    timestamp = 12345
+    timestamp = 12_345
     assert :ok == :gen_tcp.send(socket, <<?I, timestamp::32, price::32>>)
-    min_time = 12345
-    max_time = 12346
+    min_time = 12_345
+    max_time = 12_346
     assert :ok == :gen_tcp.send(socket, <<?Q, min_time::32, max_time::32>>)
     :gen_tcp.close(socket)
   end
