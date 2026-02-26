@@ -10,20 +10,8 @@ defmodule ProtohackerElixir.Application do
     children = [
       {Task.Supervisor, name: ProtohackerElixir.Generic.TaskSupervisor},
       {DynamicSupervisor, name: ProtohackerElixir.Generic.DynamicSupervisor},
-      {ProtohackerElixir.Budget.Room, []},
-      Supervisor.child_spec(
-        {ProtohackerElixir.Generic.Server,
-         port: 10_004,
-         challenge: ProtohackerElixir.Budget.Client,
-         task_type: :dynamic,
-         socket_opts: [
-           :binary,
-           packet: :line,
-           active: false,
-           reuseaddr: true
-         ]},
-        id: :budget_client
-      )
+      {ProtohackerElixir.StrangeDb.DbServer, version: "1.0.0"},
+      {ProtohackerElixir.StrangeDb.DbAcceptor, port: 10_001}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
