@@ -1,5 +1,5 @@
 defmodule ProtohackerElixir.StrangeDb.DbServer do
-  alias ProtohackerElixir.StrangeDb.DbState
+  alias ProtohackerElixir.StrangeDb.DbServerData
   use GenServer
   require Logger
 
@@ -9,11 +9,16 @@ defmodule ProtohackerElixir.StrangeDb.DbServer do
   end
 
   def init(init_arg) do
-    {:ok, %DbState{data: %{"version" => init_arg.version}}}
+    {:ok, %DbServerData{data: %{"version" => init_arg.version}}}
   end
 
   def insert(key, value) do
     GenServer.cast(__MODULE__, {:insert, key, value})
+  end
+
+  @spec retrieve(String.t()) :: String.t() | nil
+  def retrieve(key) do
+    GenServer.call(__MODULE__, {:retrieve, key})
   end
 
   def handle_cast({:insert, key, value}, state) do
@@ -21,11 +26,7 @@ defmodule ProtohackerElixir.StrangeDb.DbServer do
     {:noreply, %{state | data: updated_data}}
   end
 
-  def retrieve(key) do
-    GenServer.call(__MODULE__, {:retrieve, key})
-  end
-
-  def handle_call({:retrieve, key}, from, state) do
+  def handle_call({:retrieve, key}, _from, state) do
     {:reply, Map.get(state.data, key), state}
   end
 end

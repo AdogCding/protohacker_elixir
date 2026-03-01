@@ -1,4 +1,4 @@
-defmodule ProtohackerElixir.StrangeDb.DbState do
+defmodule ProtohackerElixir.StrangeDb.DbServerData do
   defstruct data: %{}, socket: nil
 
   @type string_map :: %{optional(String.t()) => String.t()}
