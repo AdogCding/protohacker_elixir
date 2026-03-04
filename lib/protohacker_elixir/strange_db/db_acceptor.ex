@@ -45,7 +45,7 @@ defmodule ProtohackerElixir.StrangeDb.DbAcceptor do
           nil
       end
 
-    Logger.debug("Database server response with #{resp}")
+    Logger.debug("Database server will response with #{resp}")
 
     case resp do
       nil ->
