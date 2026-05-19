@@ -9,9 +9,7 @@ defmodule ProtohackerElixir.Application do
   def start(_type, _args) do
     children = [
       {Task.Supervisor, name: ProtohackerElixir.Generic.TaskSupervisor},
-      {DynamicSupervisor, name: ProtohackerElixir.Generic.DynamicSupervisor},
-      {ProtohackerElixir.StrangeDb.DbServer, version: "1.0.0"},
-      {ProtohackerElixir.StrangeDb.DbAcceptor, port: 10_001}
+      {DynamicSupervisor, name: ProtohackerElixir.Generic.DynamicSupervisor}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

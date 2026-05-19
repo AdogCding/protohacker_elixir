@@ -40,6 +40,11 @@ defmodule ProtohackerElixir.Generic.Server do
     end
   end
 
+  @doc """
+  Don't call `accept` inside init().
+  It will be waiting for income connections and block init()
+  handle_continue guranteed that it would be called right after init(), no message could be handled cutting the queue
+  """
   @impl true
   def handle_continue(:accept_loop, state = %{socket: socket}) do
     with {:ok, client_socket} <- :gen_tcp.accept(socket, 1000 * 60),

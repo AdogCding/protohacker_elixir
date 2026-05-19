@@ -10,3 +10,6 @@ solve (protohackers)[https://protohackers.com/] problems:
 
 ## How to start program
 
+```sh
+mix run --no-halt
+```
