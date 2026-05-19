@@ -33,7 +33,7 @@ defmodule ProtohackerElixir.MixProject do
       smoke_test: &start_smoke_test/1,
       prime_time: &start_prime_time/1,
       means_to_an_end: &start_means_to_an_end/1,
-      
+      budget_chat: &start_budget_chat/1
     ]
   end
 
@@ -87,6 +87,28 @@ defmodule ProtohackerElixir.MixProject do
            reuseaddr: true
          ]},
         id: :price
+      )
+
+    {:ok, _pid} = Supervisor.start_link([spec], strategy: :one_for_one)
+    System.no_halt(true)
+  end
+
+  defp start_budget_chat(_) do
+    Mix.Task.run("app.start")
+
+    spec =
+      Supervisor.child_spec(
+        {ProtohackerElixir.Generic.Server,
+         port: 10_004,
+         challenge: ProtohackerElixir.Budget.Client,
+         task_type: :dynamic,
+         socket_opts: [
+           :binary,
+           packet: :line,
+           active: false,
+           reuseaddr: true
+         ]},
+        id: :budget_client
       )
 
     {:ok, _pid} = Supervisor.start_link([spec], strategy: :one_for_one)
