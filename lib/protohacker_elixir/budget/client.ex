@@ -33,6 +33,7 @@ defmodule ProtohackerElixir.Budget.Client do
     {:keep_state_and_data, []}
   end
 
+  # 状态机先调整状态，然后再消费actions
   def handle_event(:internal, :send_welcome_and_await_name, :ready, data) do
     %{client_socket: client_socket} = data
     :gen_tcp.send(client_socket, "Welcome to budgetchat! What shall I call you?\n")

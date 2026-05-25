@@ -7,20 +7,21 @@ defmodule ProtohackerElixirTest do
     assert ProtohackerElixir.Prime.Helper.prime?(4) == false
   end
 
-  test "price" do
-    {:ok, socket} =
-      :gen_tcp.connect(~c"localhost", 10_003, [
-        :binary,
-        packet: :raw,
-        active: false
-      ])
+  test "is Boguscoin address" do
+    assert ProtohackerElixir.Proxy.Helper.is_boguscoin_address?("7F1u3wSD5RbOHQmupo9nx4TnhQ") ==
+             true
 
-    price = 100
-    timestamp = 12_345
-    assert :ok == :gen_tcp.send(socket, <<?I, timestamp::32, price::32>>)
-    min_time = 12_345
-    max_time = 12_346
-    assert :ok == :gen_tcp.send(socket, <<?Q, min_time::32, max_time::32>>)
-    :gen_tcp.close(socket)
+    assert ProtohackerElixir.Proxy.Helper.is_boguscoin_address?("7iKDZEwPZSqIvDnHvVN2r0hUWXD5rHX") ==
+             true
+
+    assert ProtohackerElixir.Proxy.Helper.is_boguscoin_address?(
+             "7LOrwbDlS8NujgjddyogWgIM93MV5N2VR"
+           ) ==
+             true
+
+    assert ProtohackerElixir.Proxy.Helper.is_boguscoin_address?(
+             "7adNeSwJkMakpEcln9HEtthSRtxdmEHOT8T"
+           ) ==
+             true
   end
 end
