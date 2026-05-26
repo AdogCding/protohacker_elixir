@@ -36,6 +36,10 @@ defmodule ProtohackerElixir.Generic.Server do
          {:continue, :accept_loop}}
 
       {:error, reason} ->
+        Logger.error(
+          "Failed to start #{inspect(challenge)} application at #{port}, reason: #{reason}"
+        )
+
         {:stop, reason}
     end
   end
