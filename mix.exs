@@ -33,7 +33,8 @@ defmodule ProtohackerElixir.MixProject do
       smoke_test: &start_smoke_test/1,
       prime_time: &start_prime_time/1,
       means_to_an_end: &start_means_to_an_end/1,
-      budget_chat: &start_budget_chat/1
+      budget_chat: &start_budget_chat/1,
+      unusual_database_program: &start_unusual_database_program/1
     ]
   end
 
@@ -110,6 +111,30 @@ defmodule ProtohackerElixir.MixProject do
          ]},
         id: :budget_client
       )
+
+    {:ok, _pid} = Supervisor.start_link([spec], strategy: :one_for_one)
+    System.no_halt(true)
+  end
+
+  defp start_unusual_database_program(_) do
+    Mix.Task.run("app.start")
+    # DBAcceptor已经是GenServer了，不需要实现child_spec
+    children = [
+      {ProtohackerElixir.StrangeDb.DbAcceptor, [port: 10_005]},
+      {ProtohackerElixir.StrangeDb.DbServer, [verion: "Keyang's 2026"]}
+    ]
+
+    {:ok, _pid} =
+      Supervisor.start_link(children, strategy: :one_for_one)
+
+    System.no_halt(true)
+  end
+
+  defp start_mob_in_the_middle() do
+    Mix.Task.run("app.start")
+
+    spec =
+      Supervisor.child_spec()
 
     {:ok, _pid} = Supervisor.start_link([spec], strategy: :one_for_one)
     System.no_halt(true)
