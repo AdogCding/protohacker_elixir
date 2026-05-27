@@ -130,7 +130,8 @@ defmodule ProtohackerElixir.MixProject do
         id: :budget_client
       )
 
-    {:ok, _pid} = Supervisor.start_link([spec], strategy: :one_for_one)
+    {:ok, _pid} = Supervisor.start_child(ProtohackerElixir.Supervisor, spec)
+    {:ok, _pid} = Supervisor.start_child(ProtohackerElixir.Supervisor, {ProtohackerElixir.Budget.Room, []})
     System.no_halt(true)
   end
 
