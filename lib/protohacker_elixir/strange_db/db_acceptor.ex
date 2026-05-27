@@ -49,6 +49,7 @@ defmodule ProtohackerElixir.StrangeDb.DbAcceptor do
 
     case resp do
       nil ->
+        :gen_udp.send(socket, ip, port, "")
         :ok
 
       resp ->
