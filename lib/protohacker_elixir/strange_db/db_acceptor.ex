@@ -53,7 +53,14 @@ defmodule ProtohackerElixir.StrangeDb.DbAcceptor do
 
       resp ->
         Logger.debug("Sending response to #{inspect(ip)}:#{port} with content: #{inspect(resp)}")
-        :gen_udp.send(socket, ip, port, "#{resp}\n")
+
+        case :gen_udp.send(socket, ip, port, "#{resp}\n") do
+          :ok ->
+            Logger.debug("Response sent successfully to #{inspect(ip)}:#{port}")
+
+          {:error, reason} ->
+            Logger.error("Failed to send response to #{inspect(ip)}:#{port}: #{reason}")
+        end
     end
 
     :inet.setopts(socket, [{:active, :once}])
