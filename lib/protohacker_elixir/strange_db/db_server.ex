@@ -9,6 +9,7 @@ defmodule ProtohackerElixir.StrangeDb.DbServer do
   end
 
   def init(init_arg) do
+    Logger.debug("Start database with #{inspect(init_arg)}")
     {:ok, %DbServerData{data: %{"version" => init_arg.version}}}
   end
 

@@ -131,20 +131,28 @@ defmodule ProtohackerElixir.MixProject do
       )
 
     {:ok, _pid} = Supervisor.start_child(ProtohackerElixir.Supervisor, spec)
-    {:ok, _pid} = Supervisor.start_child(ProtohackerElixir.Supervisor, {ProtohackerElixir.Budget.Room, []})
+
+    {:ok, _pid} =
+      Supervisor.start_child(ProtohackerElixir.Supervisor, {ProtohackerElixir.Budget.Room, []})
+
     System.no_halt(true)
   end
 
   defp start_unusual_database_program(_) do
     Mix.Task.run("app.start")
     # DBAcceptor已经是GenServer了，不需要实现child_spec
-    children = [
-      {ProtohackerElixir.StrangeDb.DbAcceptor, [port: 10_005]},
-      {ProtohackerElixir.StrangeDb.DbServer, [verion: "Keyang's 2026"]}
-    ]
 
     {:ok, _pid} =
-      Supervisor.start_link(children, strategy: :one_for_one)
+      Supervisor.start_child(
+        ProtohackerElixir.Supervisor,
+        {ProtohackerElixir.StrangeDb.DbAcceptor, [port: 10_005]}
+      )
+
+    {:ok, _pid} =
+      Supervisor.start_child(
+        ProtohackerElixir.Supervisor,
+        {ProtohackerElixir.StrangeDb.DbServer, [version: "Keyang's 2026"]}
+      )
 
     System.no_halt(true)
   end
