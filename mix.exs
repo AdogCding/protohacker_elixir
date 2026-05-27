@@ -24,7 +24,10 @@ defmodule ProtohackerElixir.MixProject do
   defp deps do
     [
       {:jason, "~> 1.4"},
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:plug_cowboy, "~> 2.5"},
+      {:phoenix, "~> 1.7"},
+      {:phoenix_live_dashboard, "~> 0.8.0"}
     ]
   end
 
@@ -39,29 +42,42 @@ defmodule ProtohackerElixir.MixProject do
   end
 
   defp start_smoke_test(_arg) do
+    # <--- Add this so you can see your logs!
+    Logger.configure(level: :debug)
     Mix.Task.run("app.start")
 
     spec =
       Supervisor.child_spec(
         {ProtohackerElixir.Generic.Server,
-         port: 10_001, challenge: ProtohackerElixir.Echo.Worker},
+         port: 10_001,
+         challenge: ProtohackerElixir.Echo.Worker,
+         task_type: :task,
+         socket_opts: [
+           :binary,
+           packet: :line,
+           active: false,
+           reuseaddr: true
+         ]},
         id: :echo
       )
 
-    {:ok, _pid} = Supervisor.start_link([spec], strategy: :one_for_one)
+    {:ok, _pid} = Supervisor.start_child(ProtohackerElixir.Supervisor, spec)
     System.no_halt(true)
   end
 
   defp start_prime_time(_) do
     Mix.Task.run("app.start")
+    Logger.configure(level: :debug)
 
     spec =
       Supervisor.child_spec(
         {ProtohackerElixir.Generic.Server,
          port: 10_002,
          challenge: ProtohackerElixir.Prime.Worker,
+         task_type: :task,
          socket_opts: [
            :binary,
+           :inet,
            packet: :line,
            active: false,
            buffer: 1024 * 1024,
@@ -70,7 +86,7 @@ defmodule ProtohackerElixir.MixProject do
         id: :prime
       )
 
-    {:ok, _pid} = Supervisor.start_link([spec], strategy: :one_for_one)
+    {:ok, _pid} = Supervisor.start_child(ProtohackerElixir.Supervisor, spec)
     System.no_halt(true)
   end
 
@@ -82,15 +98,17 @@ defmodule ProtohackerElixir.MixProject do
         {ProtohackerElixir.Generic.Server,
          port: 10_003,
          challenge: ProtohackerElixir.Price.Worker,
+         task_type: :task,
          socket_opts: [
            :binary,
+           :inet,
            active: false,
            reuseaddr: true
          ]},
         id: :price
       )
 
-    {:ok, _pid} = Supervisor.start_link([spec], strategy: :one_for_one)
+    {:ok, _pid} = Supervisor.start_child(ProtohackerElixir.Supervisor, spec)
     System.no_halt(true)
   end
 

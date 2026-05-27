@@ -9,7 +9,9 @@ defmodule ProtohackerElixir.Application do
   def start(_type, _args) do
     children = [
       {Task.Supervisor, name: ProtohackerElixir.Generic.TaskSupervisor},
-      {DynamicSupervisor, name: ProtohackerElixir.Generic.DynamicSupervisor}
+      {DynamicSupervisor, name: ProtohackerElixir.Generic.DynamicSupervisor},
+      {Phoenix.PubSub, name: ProtohackerElixir.PubSub},
+      ProtohackerElixir.Web.Endpoint
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

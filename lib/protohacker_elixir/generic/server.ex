@@ -32,6 +32,8 @@ defmodule ProtohackerElixir.Generic.Server do
 
     case :gen_tcp.listen(port, socket_opts) do
       {:ok, socket} ->
+        Logger.debug("Listening on port #{port} for #{inspect(challenge)} application")
+
         {:ok, %{socket: socket, challenge: challenge, task_type: task_type},
          {:continue, :accept_loop}}
 
@@ -51,14 +53,22 @@ defmodule ProtohackerElixir.Generic.Server do
   """
   @impl true
   def handle_continue(:accept_loop, state = %{socket: socket}) do
+    Logger.debug("Waiting for incoming connections for #{inspect(state.challenge)} application")
+
     with {:ok, client_socket} <- :gen_tcp.accept(socket, 1000 * 60),
          {:ok, pid} <-
            start_task(client_socket, state),
          :ok <- :gen_tcp.controlling_process(client_socket, pid) do
+      Logger.debug("Accepted connection, transferred socket to #{inspect(pid)}")
       send(pid, :socket_transferred)
       {:noreply, state, {:continue, :accept_loop}}
     else
-      {:error, reason} -> {:stop, reason}
+      {:error, reason} ->
+        Logger.error(
+          "Failed to accept connection for #{inspect(state.challenge)} application, reason: #{inspect(reason)}"
+        )
+
+        {:stop, reason}
     end
   end
 
