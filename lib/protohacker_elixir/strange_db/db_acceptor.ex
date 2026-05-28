@@ -32,7 +32,7 @@ defmodule ProtohackerElixir.StrangeDb.DbAcceptor do
     Logger.debug("Received packet from #{inspect(ip)}:#{port} with content: #{inspect(packet)}")
 
     retrieve_res =
-      case DbCmdHandler.parse_cmd(packet |> String.trim()) do
+      case DbCmdHandler.parse_cmd(packet) do
         {:ok, %DbCmd{cmd: :insert, key: key, value: value}} ->
           Logger.debug("Insert #{key}, #{value}")
           DbServer.insert(key, value)
