@@ -28,6 +28,6 @@ defmodule ProtohackerElixir.StrangeDb.DbServer do
   end
 
   def handle_call({:retrieve, key}, _from, state) do
-    {:reply, Map.get(state.data, key), state}
+    {:reply, {key, Map.get(state.data, key)}, state}
   end
 end
