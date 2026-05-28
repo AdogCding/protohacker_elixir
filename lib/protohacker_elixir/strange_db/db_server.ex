@@ -17,13 +17,18 @@ defmodule ProtohackerElixir.StrangeDb.DbServer do
     GenServer.cast(__MODULE__, {:insert, key, value})
   end
 
-  @spec retrieve(String.t()) :: {String.t(), String.t()} | nil
+  @spec retrieve(String.t()) :: {String.t(), String.t() | nil} | nil
   def retrieve(key) do
     GenServer.call(__MODULE__, {:retrieve, key})
   end
 
   def handle_cast({:insert, key, value}, state) do
-    updated_data = Map.put(state.data, key, value)
+    updated_data =
+      case key do
+        "version" -> state.data
+        _ -> Map.put(state.data, key, value)
+      end
+
     {:noreply, %{state | data: updated_data}}
   end
 
