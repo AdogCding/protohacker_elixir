@@ -17,7 +17,7 @@ defmodule ProtohackerElixir.StrangeDb.DbServer do
     GenServer.cast(__MODULE__, {:insert, key, value})
   end
 
-  @spec retrieve(String.t()) :: String.t() | nil
+  @spec retrieve(String.t()) :: {String.t(), String.t()} | nil
   def retrieve(key) do
     GenServer.call(__MODULE__, {:retrieve, key})
   end

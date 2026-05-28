@@ -31,9 +31,10 @@ defmodule ProtohackerElixir.StrangeDb.DbAcceptor do
       ) do
     Logger.debug("Received packet from #{inspect(ip)}:#{port} with content: #{inspect(packet)}")
 
-    {k, v} =
+    retrieve_res =
       case DbCmdHandler.parse_cmd(packet |> String.trim()) do
         {:ok, %DbCmd{cmd: :insert, key: key, value: value}} ->
+          Logger.debug("Insert #{key}, #{value}")
           DbServer.insert(key, value)
           nil
 
@@ -45,18 +46,20 @@ defmodule ProtohackerElixir.StrangeDb.DbAcceptor do
           nil
       end
 
-    Logger.debug("Database server will response with #{k}, #{v}")
+    Logger.debug("Database server will response with #{inspect(retrieve_res)}")
 
-    case {k, v} do
+    case retrieve_res do
+      nil ->
+        :ok
+
       {_, nil} ->
         :ok
 
-      _ ->
-        Logger.debug(
-          "Sending response to #{inspect(ip)}:#{port} with content: #{inspect({k, v})}"
-        )
+      {k, v} ->
+        resp = "#{k}=#{v}"
+        Logger.debug("Sending response to #{inspect(ip)}:#{port} with content: #{resp}")
 
-        case :gen_udp.send(socket, ip, port, "#{k}=#{v}") do
+        case :gen_udp.send(socket, ip, port, resp) do
           :ok ->
             Logger.debug("Response sent successfully to #{inspect(ip)}:#{port}")
 
