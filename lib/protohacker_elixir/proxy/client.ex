@@ -58,9 +58,7 @@ defmodule ProtohackerElixir.Proxy.Client do
     %{tony_boguscoin_addr: tony_boguscoin_addr} = state
 
     data
-    |> String.trim_trailing()
     |> ProtohackerElixir.Proxy.Helper.replace_boguscoin_address(tony_boguscoin_addr)
-    |> then(&(&1 <> "\n"))
   end
 
   defp handle_server_data(data, state) do
