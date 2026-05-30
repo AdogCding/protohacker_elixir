@@ -34,10 +34,12 @@ defmodule ProtohackerElixir.Proxy.Client do
     case socket do
       ^client_socket ->
         client_msg = handle_client_data(data, state)
+        Logger.debug("Send client msg to upstream server: #{inspect(client_msg)}")
         :gen_tcp.send(server_socket, client_msg)
 
       ^server_socket ->
         handle_server_data(data, state)
+        Logger.debug("Send server msg to client: #{inspect(data)}")
         :gen_tcp.send(client_socket, data)
     end
 
