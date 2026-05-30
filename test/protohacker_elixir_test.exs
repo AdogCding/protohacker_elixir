@@ -1,5 +1,6 @@
 defmodule ProtohackerElixirTest do
   use ExUnit.Case
+  @address "7YWHMfk9JZe0LM0g1ZauHuiSxhI"
   doctest ProtohackerElixir
 
   test "is prime" do
@@ -8,20 +9,35 @@ defmodule ProtohackerElixirTest do
   end
 
   test "is Boguscoin address" do
-    assert ProtohackerElixir.Proxy.Helper.is_boguscoin_address?("7F1u3wSD5RbOHQmupo9nx4TnhQ") ==
-             true
-
-    assert ProtohackerElixir.Proxy.Helper.is_boguscoin_address?("7iKDZEwPZSqIvDnHvVN2r0hUWXD5rHX") ==
-             true
-
-    assert ProtohackerElixir.Proxy.Helper.is_boguscoin_address?(
-             "7LOrwbDlS8NujgjddyogWgIM93MV5N2VR"
+    # 🛑 陷阱 4：太短了（25个字符，加上7只有26，符合！如果少于26就不会替换）
+    assert ProtohackerElixir.Proxy.Helper.replace_boguscoin_address(
+             "7123456789012345678901234\n",
+             @address
            ) ==
-             true
+             "7123456789012345678901234\n"
 
-    assert ProtohackerElixir.Proxy.Helper.is_boguscoin_address?(
-             "7adNeSwJkMakpEcln9HEtthSRtxdmEHOT8T"
+    assert ProtohackerElixir.Proxy.Helper.replace_boguscoin_address(
+             "pay me at 7F1234567890123456789012345678\n",
+             @address
            ) ==
-             true
+             "pay me at 7YWHMfk9JZe0LM0g1ZauHuiSxhI\n"
+
+    assert ProtohackerElixir.Proxy.Helper.replace_boguscoin_address(
+             "7F1234567890123456789012345678 is my address\n",
+             @address
+           ) ==
+             "7YWHMfk9JZe0LM0g1ZauHuiSxhI is my address\n"
+
+    assert ProtohackerElixir.Proxy.Helper.replace_boguscoin_address(
+             "send to 7F1234567890123456789012345678 please\n",
+             @address
+           ) ==
+             "send to 7YWHMfk9JZe0LM0g1ZauHuiSxhI please\n"
+
+    assert ProtohackerElixir.Proxy.Helper.replace_boguscoin_address(
+             "send to 7F1234567890123456789012345678 please\n",
+             @address
+           ) ==
+             "send to 7YWHMfk9JZe0LM0g1ZauHuiSxhI please\n"
   end
 end

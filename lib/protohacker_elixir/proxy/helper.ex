@@ -1,10 +1,8 @@
 defmodule ProtohackerElixir.Proxy.Helper do
   @moduledoc false
+  @boguscoin_regex ~r/(?<=^| )7[a-zA-Z0-9]{26,35}(?=[ \n\r]|$)/
 
-  def is_boguscoin_address?(address) do
-    String.starts_with?(address, "7") and
-      Regex.match?(~r/^[a-zA-Z0-9]+$/, address) and
-      String.length(address) >= 26 and
-      String.length(address) <= 35
+  def replace_boguscoin_address(message, address) do
+    Regex.replace(@boguscoin_regex, message, address)
   end
 end

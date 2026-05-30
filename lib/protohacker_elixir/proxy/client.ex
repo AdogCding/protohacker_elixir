@@ -33,8 +33,8 @@ defmodule ProtohackerElixir.Proxy.Client do
 
     case socket do
       ^client_socket ->
-        handle_client_data(data, state)
-        :gen_tcp.send(server_socket, data)
+        client_msg = handle_client_data(data, state)
+        :gen_tcp.send(server_socket, client_msg)
 
       ^server_socket ->
         handle_server_data(data, state)
@@ -55,7 +55,12 @@ defmodule ProtohackerElixir.Proxy.Client do
 
   defp handle_client_data(data, state) do
     Logger.debug("Receive client data: #{inspect(data)}, State: #{inspect(state)}")
+    %{tony_boguscoin_addr: tony_boguscoin_addr} = state
+
     data
+    |> String.trim_trailing()
+    |> ProtohackerElixir.Proxy.Helper.replace_boguscoin_address(tony_boguscoin_addr)
+    |> then(&(&1 <> "\n"))
   end
 
   defp handle_server_data(data, state) do
