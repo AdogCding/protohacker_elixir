@@ -39,5 +39,11 @@ defmodule ProtohackerElixirTest do
              @address
            ) ==
              "send to 7YWHMfk9JZe0LM0g1ZauHuiSxhI please\n"
+
+    assert ProtohackerElixir.Proxy.Helper.replace_boguscoin_address(
+             "[ProtoHunter845] Please pay the ticket price of 15 Boguscoins to one of these addresses: 7097bT12yuj8y389Y4DvwP4CUS 7YWHMfk9JZe0LM0g1ZauHuiSxhI 7YWHMfk9JZe0LM0g1ZauHuiSxhI",
+             @address
+           ) ==
+             "[ProtoHunter845] Please pay the ticket price of 15 Boguscoins to one of these addresses: 7YWHMfk9JZe0LM0g1ZauHuiSxhI 7YWHMfk9JZe0LM0g1ZauHuiSxhI 7YWHMfk9JZe0LM0g1ZauHuiSxhI"
   end
 end
