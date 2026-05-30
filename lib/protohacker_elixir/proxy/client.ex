@@ -38,9 +38,9 @@ defmodule ProtohackerElixir.Proxy.Client do
         :gen_tcp.send(server_socket, client_msg)
 
       ^server_socket ->
-        handle_server_data(data, state)
-        Logger.debug("Send server msg to client: #{inspect(data)}")
-        :gen_tcp.send(client_socket, data)
+        msg = handle_server_data(data, state)
+        Logger.debug("Send server msg to client: #{inspect(msg)}")
+        :gen_tcp.send(client_socket, msg)
     end
 
     :inet.setopts(socket, active: :once)
@@ -55,6 +55,7 @@ defmodule ProtohackerElixir.Proxy.Client do
     Logger.debug("Process terminate for #{reason}")
   end
 
+  # there is address sent directly from server?
   defp handle_client_data(data, state) do
     Logger.debug("Receive client data: #{inspect(data)}, State: #{inspect(state)}")
     %{tony_boguscoin_addr: tony_boguscoin_addr} = state
@@ -65,6 +66,9 @@ defmodule ProtohackerElixir.Proxy.Client do
 
   defp handle_server_data(data, state) do
     Logger.debug("Receive server data: #{inspect(data)}, State: #{inspect(state)}")
+    %{tony_boguscoin_addr: tony_boguscoin_addr} = state
+
     data
+    |> ProtohackerElixir.Proxy.Helper.replace_boguscoin_address(tony_boguscoin_addr)
   end
 end
