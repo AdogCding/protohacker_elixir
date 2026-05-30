@@ -1,6 +1,6 @@
 # ProtohackerElixir
 
-solve (protohackers)[https://protohackers.com/] problems:
+solve [protohackers](https://protohackers.com/) problems:
 
 - [x] Smoke test
 - [x] Prime time
