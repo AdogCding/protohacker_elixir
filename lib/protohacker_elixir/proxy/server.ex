@@ -1,4 +1,5 @@
 defmodule ProtohackerElixir.Proxy.Server do
+  require Logger
   use GenServer
 
   def start_link(opts) do
@@ -20,7 +21,8 @@ defmodule ProtohackerElixir.Proxy.Server do
 
   def handle_info({:tcp, _socket, data}, state) do
     # 从服务器接收到数据，打印并继续监听
-    IO.puts("Received from server: #{inspect(data)}")
+    Logger.debug("Received from client: #{inspect(data)}")
+    :gen_tcp.send(state.socket, data)
     {:noreply, state}
   end
 end

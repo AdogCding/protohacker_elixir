@@ -37,7 +37,8 @@ defmodule ProtohackerElixir.MixProject do
       prime_time: &start_prime_time/1,
       means_to_an_end: &start_means_to_an_end/1,
       budget_chat: &start_budget_chat/1,
-      unusual_database_program: &start_unusual_database_program/1
+      unusual_database_program: &start_unusual_database_program/1,
+      mob_in_the_middle: &start_mob_in_the_middle/1
     ]
   end
 
@@ -157,13 +158,26 @@ defmodule ProtohackerElixir.MixProject do
     System.no_halt(true)
   end
 
-  defp start_mob_in_the_middle() do
+  defp start_mob_in_the_middle(_) do
     Mix.Task.run("app.start")
 
     spec =
-      Supervisor.child_spec()
+      Supervisor.child_spec(
+        {ProtohackerElixir.Generic.Server,
+         port: 10_006,
+         challenge: ProtohackerElixir.Proxy.Client,
+         task_type: :dynamic,
+         socket_opts: [
+           :binary,
+           packet: :line,
+           active: false,
+           reuseaddr: true
+         ]},
+        id: :mob_in_the_middle
+      )
 
-    {:ok, _pid} = Supervisor.start_link([spec], strategy: :one_for_one)
+    {:ok, _pid} = Supervisor.start_child(ProtohackerElixir.Supervisor, spec)
+
     System.no_halt(true)
   end
 end
