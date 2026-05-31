@@ -45,3 +45,21 @@ mix budget_chatr
 ```
 
 program will be listening on port 10004
+
+### start `unusual database program` problem solution
+
+```sh
+mix unusual_database_program
+```
+
+program will be listening on port 10005
+
+### start `mob in the middle` problem solution
+
+```shmix mob_in_the_middle
+```
+
+program will be listening on port 10006
+
+`NOTE`: this problem solution has a tricky part. You need to replace not only client's message but also server's message.
+I can get the point: not all o the messages come from your proxy client, but you have to guarantee that all messages are hacked, otherwise the you might lost your arm.
