@@ -17,8 +17,8 @@ defmodule ProtohackerElixir.Speed.DataType.Parser do
           | WantHeartbeat.t()
 
   @spec parse(binary) :: {:ok, {integer(), data_type()}} | {:error, term()}
-  def parse(<<type_of_msg::unsigned-8, size_of_msg::unsigned-8, real_msg::binary>>) do
-    <<first_n_bytes::binary-size(size_of_msg), rest_msg::binary>> = real_msg
+  def parse(<<type_of_msg::unsigned-8, size_of_msg::unsigned-8, real_msg_bytes::binary>>) do
+    <<first_n_bytes::binary-size(size_of_msg), rest_msg::binary>> = real_msg_bytes
     {:error, :not_implemented}
   end
 end
