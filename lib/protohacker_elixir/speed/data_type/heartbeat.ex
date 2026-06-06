@@ -1,9 +1,11 @@
 defmodule ProtohackerElixir.Speed.DataType.Heartbeat do
-  defstruct road: nil, mile: nil, limit: nil
+  defstruct []
+  @behaviour ProtohackerElixir.Speed.Message
 
-  @type t :: %__MODULE__{
-          road: number(),
-          mile: number(),
-          limit: number()
-        }
+  @type t :: %__MODULE__{}
+
+  @impl true
+  def new(_) do
+    %__MODULE__{}
+  end
 end

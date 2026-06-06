@@ -1,4 +1,4 @@
-defmodule ProtohackerElixir.Speed.DataType.Parser do
+defmodule ProtohackerElixir.Speed.DataType do
   alias ProtohackerElixir.Speed.DataType.WantHeartbeat
   alias ProtohackerElixir.Speed.DataType.Ticket
   alias ProtohackerElixir.Speed.DataType.Plate
@@ -16,9 +16,17 @@ defmodule ProtohackerElixir.Speed.DataType.Parser do
           | Ticket.t()
           | WantHeartbeat.t()
 
-  @spec parse(binary) :: {:ok, {integer(), data_type()}} | {:error, term()}
-  def parse(<<type_of_msg::unsigned-8, size_of_msg::unsigned-8, real_msg_bytes::binary>>) do
-    <<first_n_bytes::binary-size(size_of_msg), rest_msg::binary>> = real_msg_bytes
-    {:error, :not_implemented}
+  @spec parse(binary) :: {:ok, data_type(), binary()} | {:error, term()}
+  def parse(<<type_of_msg::unsigned-8, real_msg_bytes::binary>>) do
+    case type_of_msg do
+      0x10 -> Error.new(real_msg_bytes)
+      0x20 -> Plate.new(real_msg_bytes)
+      0x30 -> IAmCamera.new(real_msg_bytes)
+      0x40 -> IAmDispatcher.new(real_msg_bytes)
+      0x50 -> Plate.new(real_msg_bytes)
+      0x60 -> Ticket.new(real_msg_bytes)
+      0x70 -> WantHeartbeat.new(real_msg_bytes)
+      _ -> {:error, :unknown_type}
+    end
   end
 end
