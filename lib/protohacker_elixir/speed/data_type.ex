@@ -21,11 +21,11 @@ defmodule ProtohackerElixir.Speed.DataType do
     case type_of_msg do
       0x10 -> Error.new(real_msg_bytes)
       0x20 -> Plate.new(real_msg_bytes)
-      0x30 -> IAmCamera.new(real_msg_bytes)
-      0x40 -> IAmDispatcher.new(real_msg_bytes)
-      0x50 -> Plate.new(real_msg_bytes)
-      0x60 -> Ticket.new(real_msg_bytes)
-      0x70 -> WantHeartbeat.new(real_msg_bytes)
+      0x21 -> Ticket.new(real_msg_bytes)
+      0x40 -> WantHeartbeat.new(real_msg_bytes)
+      0x41 -> Heartbeat.new(real_msg_bytes)
+      0x80 -> IAmCamera.new(real_msg_bytes)
+      0x81 -> IAmDispatcher.new(real_msg_bytes)
       _ -> {:error, :unknown_type}
     end
   end

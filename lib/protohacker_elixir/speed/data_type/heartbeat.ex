@@ -5,7 +5,7 @@ defmodule ProtohackerElixir.Speed.DataType.Heartbeat do
   @type t :: %__MODULE__{}
 
   @impl true
-  def new(_) do
-    %__MODULE__{}
+  def new(msg) do
+    {:ok, %__MODULE__{}, msg}
   end
 end
