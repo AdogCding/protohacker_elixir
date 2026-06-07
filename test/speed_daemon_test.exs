@@ -77,4 +77,8 @@ defmodule SpeedDaemonTest do
 
     assert DataType.parse(ticket_message) == {:ok, ticket, <<>>}
   end
+
+  test "encode string message" do
+    assert DataType.Helper.encode_str("bad") == <<0x03, 0x62, 0x61, 0x64>>
+  end
 end
