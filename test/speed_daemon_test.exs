@@ -1,6 +1,7 @@
 defmodule SpeedDaemonTest do
   alias ProtohackerElixir.Speed.DataType.Plate
   alias ProtohackerElixir.Speed.DataType.Error
+  alias ProtohackerElixir.Speed.DataType.Ticket
   alias ProtohackerElixir.Speed.DataType
   use ExUnit.Case
 
@@ -16,5 +17,64 @@ defmodule SpeedDaemonTest do
              <<0x20, 0x07, 0x52, 0x45, 0x30, 0x35, 0x42, 0x4B, 0x47, 0x00, 0x01, 0xE2, 0x40>>
            ) ==
              {:ok, %Plate{plate: "RE05BKG", timestamp: 123_456}, <<>>}
+  end
+
+  test "parse ticket message" do
+    ticket_message =
+      <<0x21, 0x04, 0x55, 0x4E, 0x31, 0x58, 0x00, 0x42, 0x00, 0x64, 0x00, 0x01, 0xE2, 0x40, 0x00,
+        0x6E, 0x00, 0x01, 0xE3, 0xA8, 0x27, 0x10>>
+
+    ticket = %Ticket{
+      plate: "UN1X",
+      road: 66,
+      mile1: 100,
+      timestamp1: 123_456,
+      mile2: 110,
+      timestamp2: 123_816,
+      speed: 10000
+    }
+
+    assert DataType.parse(ticket_message) == {:ok, ticket, <<>>}
+
+    ticket_message =
+      <<
+        0x21,
+        0x07,
+        0x52,
+        0x45,
+        0x30,
+        0x35,
+        0x42,
+        0x4B,
+        0x47,
+        0x01,
+        0x70,
+        0x04,
+        0xD2,
+        0x00,
+        0x0F,
+        0x42,
+        0x40,
+        0x04,
+        0xD3,
+        0x00,
+        0x0F,
+        0x42,
+        0x7C,
+        0x17,
+        0x70
+      >>
+
+    ticket = %Ticket{
+      plate: "RE05BKG",
+      road: 368,
+      mile1: 1234,
+      timestamp1: 1_000_000,
+      mile2: 1235,
+      timestamp2: 1_000_060,
+      speed: 6000
+    }
+
+    assert DataType.parse(ticket_message) == {:ok, ticket, <<>>}
   end
 end
