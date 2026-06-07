@@ -3,6 +3,7 @@ defmodule SpeedDaemonTest do
   alias ProtohackerElixir.Speed.DataType.Error
   alias ProtohackerElixir.Speed.DataType.Ticket
   alias ProtohackerElixir.Speed.DataType
+  alias ProtohackerElixir.Speed.Serializable
   use ExUnit.Case
 
   test "parse error message" do
@@ -79,6 +80,6 @@ defmodule SpeedDaemonTest do
   end
 
   test "encode string message" do
-    assert DataType.Helper.encode_str("bad") == <<0x03, 0x62, 0x61, 0x64>>
+    assert Serializable.Helper.encode_str("bad") == <<0x03, 0x62, 0x61, 0x64>>
   end
 end

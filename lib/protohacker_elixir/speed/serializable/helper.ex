@@ -1,4 +1,4 @@
-defmodule ProtohackerElixir.Speed.DataType.Helper do
+defmodule ProtohackerElixir.Speed.Serializable.Helper do
   def encode_str(msg) when length(msg) > 255 do
     raise RuntimeError, message: "#{msg} exceed 255 size"
   end
