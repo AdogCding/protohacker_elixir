@@ -56,10 +56,23 @@ program will be listening on port 10005
 
 ### start `mob in the middle` problem solution
 
-```shmix mob_in_the_middle
+```sh
+mix mob_in_the_middle
 ```
 
 program will be listening on port 10006
 
 `NOTE`: this problem solution has a tricky part. You need to replace not only client's message but also server's message.
 I can get the point: not all o the messages come from your proxy client, but you have to guarantee that all messages are hacked, otherwise the you might lost your arm.
+
+### Solution for problem 6
+
+The key logic of your server is handling plate message
+
+#### Handle plate message
+```mermaid
+graph TD
+
+A[Start] --> B[Check whether message is legit] -->  C[Store Plate message in database] --> D[Find out the car exceed limit or not] --> E[Send message back]
+```
+####

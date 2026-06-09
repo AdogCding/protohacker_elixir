@@ -1,4 +1,6 @@
 defmodule SpeedDaemonTest do
+  alias ProtohackerElixir.Speed.Witness
+  alias ProtohackerElixir.Speed.Helper
   alias ProtohackerElixir.Speed.DataType.Plate
   alias ProtohackerElixir.Speed.DataType.Error
   alias ProtohackerElixir.Speed.DataType.Ticket
@@ -81,5 +83,18 @@ defmodule SpeedDaemonTest do
 
   test "encode string message" do
     assert Serializable.Helper.encode_str("bad") == <<0x03, 0x62, 0x61, 0x64>>
+  end
+
+  test "is exceed speed limit" do
+    assert Helper.exceed_limit?(
+             %Witness{
+               plate: "TEST01",
+               mile1: 8,
+               timestamp1: 0,
+               mile2: 9,
+               timestamp2: 45
+             },
+             60
+           ) == true
   end
 end
