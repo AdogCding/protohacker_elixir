@@ -18,6 +18,10 @@ defmodule ProtohackerElixir.Speed.Database do
     GenServer.call(__MODULE__, {:insert_camera_record, camera_record})
   end
 
+  @spec insert_ticket() :: {:ok}
+  def insert_ticket() do
+  end
+
   # 保存开出的罚单
   def insert_ticket() do
   end
