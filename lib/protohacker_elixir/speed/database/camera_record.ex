@@ -7,4 +7,12 @@ defmodule ProtohackerElixir.Speed.Database.CameraRecord do
           mile: integer(),
           timestamp: integer()
         }
+  def new({plate, road, mile, timestamp}) do
+    %__MODULE__{
+      plate: plate,
+      road: road,
+      mile: mile,
+      timestamp: timestamp
+    }
+  end
 end
