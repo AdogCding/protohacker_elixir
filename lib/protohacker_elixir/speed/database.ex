@@ -12,7 +12,6 @@ defmodule ProtohackerElixir.Speed.Database do
 
   def init(_args) do
     :ets.new(:camera_record, [:duplicate_bag, :public, :named_table, read_concurrency: true])
-    :ets.new(:ticket, [:duplicate_bag, :public, :named_table, read_concurrency: true])
     :ets.new(:road, [:set, :public, :named_table, read_concurrency: true])
     :ets.new(:issued_ticket_record, [:set, :public, :named_table, read_concurrency: true])
     {:ok, %{}}
@@ -47,16 +46,7 @@ defmodule ProtohackerElixir.Speed.Database do
     GenServer.call(__MODULE__, {:query_ticket, {plate, day}})
   end
 
-  # 保存道路的信息
-  @spec insert_road(Road.t()) :: {:ok} | {:error}
-  def insert_road(road) do
-    GenServer.call(__MODULE__, {:insert_road, road})
-  end
 
-  # 查询道路信息
-  @spec query_road(integer()) :: Road.t()
-  def query_road(road) do
-  end
 
   def handle_call(
         {:insert_camera_record,
@@ -73,10 +63,6 @@ defmodule ProtohackerElixir.Speed.Database do
     {:reply, camera_records |> Enum.map(&CameraRecord.new(&1)), state}
   end
 
-  def handle_call({:insert_road, %Road{road: road, limit: limit}}, _from, state) do
-    :ets.insert_new(:road, {road, limit})
-    {:reply, {:ok}, state}
-  end
 
   def handle_call(
         {:insert_ticket,
