@@ -16,6 +16,7 @@ defmodule ProtohackerElixir.Speed.DataType do
           | Ticket.t()
           | WantHeartbeat.t()
 
+  # read bytes and construct a data, return rest of bytes
   @spec parse(binary) :: {:ok, data_type(), binary()} | {:error, term()}
   def parse(<<type_of_msg::unsigned-8, real_msg_bytes::binary>>) do
     case type_of_msg do
