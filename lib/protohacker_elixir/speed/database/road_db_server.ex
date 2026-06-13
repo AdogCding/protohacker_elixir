@@ -7,7 +7,9 @@ defmodule ProtohackerElixir.Speed.Database.RoadDbServer do
   end
 
   def init(_) do
-    {:ok, %{}}
+    table = :ets.new(:road, [:set, :public, :named_table, read_concurrency: true])
+
+    {:ok, %{table: table}}
   end
 
   # 保存道路的信息
