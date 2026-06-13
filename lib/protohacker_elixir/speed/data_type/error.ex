@@ -8,12 +8,12 @@ defmodule ProtohackerElixir.Speed.DataType.Error do
         }
 
   @impl true
-  def new(<<msg_len::unsigned-8, msg::binary-size(msg_len), rest::binary>>) do
+  def new(<<msg_len::unsigned-8-big, msg::binary-size(msg_len), rest::binary>>) do
     {:ok, %__MODULE__{msg: msg}, rest}
   end
 
   @impl true
   def new(_) do
-    {:error, :not_match}
+    {:error, :imcomplete}
   end
 end

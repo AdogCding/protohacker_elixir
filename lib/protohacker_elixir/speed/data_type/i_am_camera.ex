@@ -9,7 +9,7 @@ defmodule ProtohackerElixir.Speed.DataType.IAmCamera do
           limit: number()
         }
 
-  def new(<<road::unsigned-16, mile::unsigned-16, limit::unsigned-16, rest::binary>>) do
+  def new(<<road::unsigned-16-big, mile::unsigned-16-big, limit::unsigned-16-big, rest::binary>>) do
     {:ok,
      %__MODULE__{
        road: road,
@@ -19,6 +19,6 @@ defmodule ProtohackerElixir.Speed.DataType.IAmCamera do
   end
 
   def new(_) do
-    {:error, :not_match}
+    {:error, :incomplete}
   end
 end

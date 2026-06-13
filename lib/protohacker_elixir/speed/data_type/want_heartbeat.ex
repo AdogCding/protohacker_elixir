@@ -2,7 +2,7 @@ defmodule ProtohackerElixir.Speed.DataType.WantHeartbeat do
   defstruct interval: nil
 
   @type t :: %__MODULE__{
-          interval: number()
+          interval: integer()
         }
   def new(<<interval::unsigned-32, rest::binary>>) do
     {:ok,

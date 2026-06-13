@@ -12,6 +12,6 @@ defmodule ProtohackerElixir.Speed.DataType.IAmDispatcher do
   end
 
   def new(_) do
-    {:error, :not_match}
+    {:error, :incomplete}
   end
 end

@@ -11,7 +11,7 @@ defmodule ProtohackerElixir.Speed.DataType.Plate do
 
   @impl true
   def new(
-        <<plate_size::unsigned-8, plate::binary-size(plate_size), timestamp::unsigned-32,
+        <<plate_size::unsigned-8, plate::binary-size(plate_size), timestamp::unsigned-32-big,
           rest::binary>>
       ) do
     {:ok, %__MODULE__{plate: plate, timestamp: timestamp}, rest}
@@ -19,6 +19,6 @@ defmodule ProtohackerElixir.Speed.DataType.Plate do
 
   @impl true
   def new(_) do
-    {:error, :not_match}
+    {:error, :incomplete}
   end
 end

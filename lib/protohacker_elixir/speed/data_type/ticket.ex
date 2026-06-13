@@ -23,9 +23,9 @@ defmodule ProtohackerElixir.Speed.DataType.Ticket do
 
   @impl true
   def new(
-        <<plate_size::unsigned-8, plate::binary-size(plate_size), road::unsigned-16,
-          mile1::unsigned-16, timestamp1::unsigned-32, mile2::unsigned-16,
-          timestamp2::unsigned-32, speed::unsigned-16, rest::binary>>
+        <<plate_size::unsigned-8, plate::binary-size(plate_size), road::unsigned-16-big,
+          mile1::unsigned-16-big, timestamp1::unsigned-32-big, mile2::unsigned-16-big,
+          timestamp2::unsigned-32-big, speed::unsigned-16-big, rest::binary>>
       ) do
     msg = %__MODULE__{
       plate: plate,
@@ -42,6 +42,6 @@ defmodule ProtohackerElixir.Speed.DataType.Ticket do
 
   @impl true
   def new(_) do
-    {:error, :not_match}
+    {:error, :incomplete}
   end
 end

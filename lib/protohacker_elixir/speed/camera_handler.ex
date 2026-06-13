@@ -1,0 +1,2 @@
+defmodule ProtohackerElixir.Speed.CameraHandler do
+end
