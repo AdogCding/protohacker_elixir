@@ -16,6 +16,28 @@ defmodule ProtohackerElixir.Speed.DataType do
           | Ticket.t()
           | WantHeartbeat.t()
 
+  @spec parse_all(binary()) :: {:ok, [data_type()], binary()} | {:error, term()}
+  def parse_all(bytes) do
+    do_parse_all(bytes, {[], <<>>})
+  end
+
+  defp do_parse_all(<<>>, res) do
+    res
+  end
+
+  defp do_parse_all(bytes, {msg_list, rest_bytes}) do
+    case parse(bytes) do
+      {:ok, msg, rest_bytes} ->
+        do_parse_all(rest_bytes, {[msg | msg_list], rest_bytes})
+
+      {:error, :incomplete} ->
+        do_parse_all(<<>>, {msg_list, bytes})
+
+      {:error, _unknown_type} ->
+        raise "unknonw type"
+    end
+  end
+
   # read bytes and construct a data, return rest of bytes
   @spec parse(binary) ::
           {:ok, data_type(), binary()} | {:error, :unknown_type} | {:error, :incomplete}

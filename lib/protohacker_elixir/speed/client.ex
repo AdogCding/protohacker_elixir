@@ -1,10 +1,4 @@
 defmodule ProtohackerElixir.Speed.Client do
-  alias ProtohackerElixir.Speed.DataType.Error
-  alias ProtohackerElixir.Speed.DataType.Heartbeat
-  alias ProtohackerElixir.Speed.SerializableUtils
-  alias ProtohackerElixir.Speed.DataType.WantHeartbeat
-  alias ProtohackerElixir.Speed.DataType.IAmDispatcher
-  alias ProtohackerElixir.Speed.DataType.IAmCamera
   alias ProtohackerElixir.Speed.DataType
   use GenServer
 
@@ -31,11 +25,7 @@ defmodule ProtohackerElixir.Speed.Client do
     full_data =
       state.data <> data
 
-    res = process_unrecognizor_msg(%{state | data: full_data})
-    {:noreply, res}
-  end
-
-  defp process_unrecognizor_msg(%{data: data} = state) do
-    
+    DataType.parse_all(full_data)
+    {:noreply, state}
   end
 end
