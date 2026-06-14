@@ -1,4 +1,5 @@
 defmodule ProtohackerElixir.Speed.Acceptor do
+  alias ProtohackerElixir.Speed.Client
   alias ProtohackerElixir.Speed.DataType
   use GenServer
 
@@ -14,11 +15,7 @@ defmodule ProtohackerElixir.Speed.Acceptor do
   def handle_info(:socket_transferred, state) do
     %{socket: socket} = state
     :inet.setopts(socket, active: :once)
-    DynamicSupervisor.start_link()
+    DynamicSupervisor.start_link(Client, socket: socket)
     {:noreply, state}
-  end
-
-  def handle_info({:tcp, socket, data}, state) do
-    DataType.parse()
   end
 end

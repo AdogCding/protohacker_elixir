@@ -1,9 +1,16 @@
 defmodule ProtohackerElixir.Speed.Client do
+  require Logger
+  alias ProtohackerElixir.Speed.DataType.Error
+  alias ProtohackerElixir.Speed.SerializableUtils
+  alias ProtohackerElixir.Speed.DataType.Heartbeat
+  alias ProtohackerElixir.Speed.DataType.BadMessage
+  alias ProtohackerElixir.Speed.DataType.WantHeartbeat
   alias ProtohackerElixir.Speed.DataType
   use GenServer
 
   def start_link(init_args) do
-    GenServer.start_link(__MODULE__, init_args)
+    socket = Keyword.get(init_args, :socket)
+    GenServer.start_link(__MODULE__, %{socket: socket})
   end
 
   def init(init_args) do
@@ -18,14 +25,56 @@ defmodule ProtohackerElixir.Speed.Client do
     {:noreply, state}
   end
 
-  def handle_info(
-        {:tcp, _socket, data},
-        %{role: :unrecogized, heartbeat_interval: heartbeat} = state
-      ) do
-    full_data =
-      state.data <> data
+  defp process_client_msg(%WantHeartbeat{interval: interval}) do
+    send(self(), {:setup_hearbeat_interval, interval})
+  end
 
-    DataType.parse_all(full_data)
-    {:noreply, state}
+  defp process_client_msg() do
+  end
+
+  def handle_info(
+        {:tcp, _socket, income_data},
+        %{data: data} = state
+      ) do
+    Logger.debug("Client received message:#{data}")
+    full_buffer = income_data <> data
+    {messages, rest_bytes} = DataType.parse_all(full_buffer)
+
+    is_ok =
+      messages
+      |> Enum.each(fn
+        # 客户端发来的错误消息，返回Error消息后，关闭连接
+        %BadMessage{} ->
+          :error
+
+        other ->
+          process_client_msg(other)
+          :ok
+      end) == :ok
+
+    case is_ok do
+      true ->
+        {:noreply, %{state | data: rest_bytes}}
+
+      false ->
+        {:terminate}
+    end
+  end
+
+  def handle_info({:setup_heartbeat_interval, interval}, %{heartbeat_interval: nil} = state) do
+    :timer.send_after(div(interval, 10), :heartbeat)
+    {:noreply, %{state | heartbeat_interval: interval}}
+  end
+
+  def handle_info(
+        {:setup_heartbeat_interval, interval},
+        %{socket: socket, heartbeat_interval: interval} = state
+      ) do
+    SerializableUtils.send_data(socket, %Error{msg: "Heartbeat already setup"})
+    {:stop, :heartbeat_already_setup, state}
+  end
+
+  def handle_info(:heartbeat, %{socket: socket}) do
+    SerializableUtils.send_data(socket, %Heartbeat{})
   end
 end

@@ -1,4 +1,5 @@
 defmodule ProtohackerElixir.Speed.DataType do
+  alias ProtohackerElixir.Speed.DataType.BadMessage
   alias ProtohackerElixir.Speed.DataType.WantHeartbeat
   alias ProtohackerElixir.Speed.DataType.Ticket
   alias ProtohackerElixir.Speed.DataType.Plate
@@ -16,16 +17,17 @@ defmodule ProtohackerElixir.Speed.DataType do
           | Ticket.t()
           | WantHeartbeat.t()
 
-  @spec parse_all(binary()) :: {:ok, [data_type()], binary()} | {:error, term()}
+  @spec parse_all(binary()) :: {[data_type()], binary()}
   def parse_all(bytes) do
-    do_parse_all(bytes, {[], <<>>})
+    {message_list, rest_bytes} = do_parse_all(bytes, {[], <<>>})
+    {message_list |> Enum.reverse(), rest_bytes}
   end
 
   defp do_parse_all(<<>>, res) do
     res
   end
 
-  defp do_parse_all(bytes, {msg_list, rest_bytes}) do
+  defp do_parse_all(bytes, {msg_list, _}) do
     case parse(bytes) do
       {:ok, msg, rest_bytes} ->
         do_parse_all(rest_bytes, {[msg | msg_list], rest_bytes})
@@ -34,7 +36,7 @@ defmodule ProtohackerElixir.Speed.DataType do
         do_parse_all(<<>>, {msg_list, bytes})
 
       {:error, _unknown_type} ->
-        raise "unknonw type"
+        do_parse_all(<<>>, {[%BadMessage{} | msg_list], bytes})
     end
   end
 

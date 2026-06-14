@@ -1,6 +1,7 @@
 defmodule SpeedDaemonTest do
+  alias ProtohackerElixir.Speed.DataType.BadMessage
   alias ProtohackerElixir.Speed.Witness
-  alias ProtohackerElixir.Speed.Helper
+  alias ProtohackerElixir.Speed.SpeedLimitHelper
   alias ProtohackerElixir.Speed.DataType.Plate
   alias ProtohackerElixir.Speed.DataType.Error
   alias ProtohackerElixir.Speed.DataType.Ticket
@@ -79,6 +80,9 @@ defmodule SpeedDaemonTest do
     }
 
     assert DataType.parse(ticket_message) == {:ok, ticket, <<>>}
+
+    assert DataType.parse_all(<<ticket_message::binary, ticket_message::binary, 0x01>>) ==
+             {[ticket, ticket, %BadMessage{}], <<0x01>>}
   end
 
   test "encode string message" do
@@ -86,7 +90,7 @@ defmodule SpeedDaemonTest do
   end
 
   test "is exceed speed limit" do
-    assert Helper.exceed_limit?(
+    assert SpeedLimitHelper.exceed_limit?(
              %Witness{
                plate: "TEST01",
                mile1: 8,
