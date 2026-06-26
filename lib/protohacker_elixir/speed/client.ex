@@ -1,5 +1,7 @@
 defmodule ProtohackerElixir.Speed.Client do
   require Logger
+  alias ProtohackerElixir.Speed.DataType.IAmDispatcher
+  alias ProtohackerElixir.Speed.DataType.IAmCamera
   alias ProtohackerElixir.Speed.DataType.Error
   alias ProtohackerElixir.Speed.SerializableUtils
   alias ProtohackerElixir.Speed.DataType.Heartbeat
@@ -29,15 +31,22 @@ defmodule ProtohackerElixir.Speed.Client do
     send(self(), {:setup_hearbeat_interval, interval})
   end
 
-  defp process_client_msg() do
+  defp process_client_msg(%IAmCamera{}) do
+  end
+
+  defp process_client_msg(%IAmDispatcher{}) do
+  end
+
+  defp process_client_msg(msg) do
+    Logger.debug("unexpect msg #{msg}")
   end
 
   def handle_info(
         {:tcp, _socket, income_data},
         %{data: data} = state
       ) do
-    Logger.debug("Client received message:#{data}")
     full_buffer = income_data <> data
+    Logger.debug("Client received message:#{full_buffer}")
     {messages, rest_bytes} = DataType.parse_all(full_buffer)
 
     is_ok =
@@ -56,7 +65,7 @@ defmodule ProtohackerElixir.Speed.Client do
       true ->
         {:noreply, %{state | data: rest_bytes}}
 
-      false ->
+      _ ->
         {:terminate}
     end
   end

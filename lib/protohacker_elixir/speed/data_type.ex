@@ -17,6 +17,7 @@ defmodule ProtohackerElixir.Speed.DataType do
           | Ticket.t()
           | WantHeartbeat.t()
 
+  # 读取buffer数据，返回符合协议数据格式的信息
   @spec parse_all(binary()) :: {[data_type()], binary()}
   def parse_all(bytes) do
     {message_list, rest_bytes} = do_parse_all(bytes, {[], <<>>})
