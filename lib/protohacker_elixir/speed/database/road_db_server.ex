@@ -21,6 +21,7 @@ defmodule ProtohackerElixir.Speed.Database.RoadDbServer do
   # 查询道路信息
   @spec query_road(integer()) :: Road.t()
   def query_road(road) do
+    :ok
   end
 
   def handle_call({:insert_road, %Road{road: road, limit: limit}}, _from, state) do

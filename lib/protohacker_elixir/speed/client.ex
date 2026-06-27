@@ -1,5 +1,6 @@
 defmodule ProtohackerElixir.Speed.Client do
   require Logger
+  alias ProtohackerElixir.Speed.ClientMessageHandler
   alias ProtohackerElixir.Speed.DataType.Plate
   alias ProtohackerElixir.Speed.DataType.IAmDispatcher
   alias ProtohackerElixir.Speed.DataType.IAmCamera
@@ -38,15 +39,12 @@ defmodule ProtohackerElixir.Speed.Client do
 
     is_ok =
       messages
-      |> Enum.each(fn
-        # 客户端发来的错误消息，返回Error消息后，关闭连接
-        %BadMessage{} ->
-          :error
-
-        other ->
-          ClientMessageHandler.process_client_msg(other)
-          :ok
-      end) == :ok
+      |> Enum.reduce_while({true}, fn msg, {is_ok} ->
+        case ClientMessageHandler.process_client_msg(msg) do
+          :ok -> {:cont, {is_ok}}
+          :error -> {:halt, {false}}
+        end
+      end)
 
     case is_ok do
       true ->
