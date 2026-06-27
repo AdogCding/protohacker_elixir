@@ -1,6 +1,5 @@
 defmodule ProtohackerElixir.Speed.Acceptor do
   alias ProtohackerElixir.Speed.Client
-  alias ProtohackerElixir.Speed.DataType
   use GenServer
 
   def start_link(args) do

@@ -1,12 +1,14 @@
 defmodule ProtohackerElixir.Speed.ClientMessageHandler do
-  def process_client_msg(%WantHeartbeat{interval: interval}) do
-    send(self(), {:setup_hearbeat_interval, interval})
+  def process_client_msg(pid, %WantHeartbeat{interval: interval}) do
+    send(pid, {:setup_hearbeat_interval, interval})
   end
 
-  def process_client_msg(%IAmCamera{}) do
+  def process_client_msg(pid, %IAmCamera{}) do
+    send(pid, {:i_am_camera})
   end
 
-  defp process_client_msg(%IAmDispatcher{}) do
+  defp process_client_msg(pid, %IAmDispatcher{}) do
+    send(pid, {:i_am_dispatcher})
   end
 
   defp process_client_msg(msg) do
