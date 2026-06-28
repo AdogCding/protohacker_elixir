@@ -55,14 +55,24 @@ defmodule ProtohackerElixir.Generic.Server do
   def handle_continue(:accept_loop, state = %{socket: socket}) do
     Logger.debug("Waiting for incoming connections for #{inspect(state.challenge)} application")
 
-    with {:ok, client_socket} <- :gen_tcp.accept(socket, 1000 * 60),
-         {:ok, pid} <-
-           start_task(client_socket, state),
-         :ok <- :gen_tcp.controlling_process(client_socket, pid) do
-      Logger.debug("Accepted connection, transferred socket to #{inspect(pid)}")
-      send(pid, :socket_transferred)
-      {:noreply, state, {:continue, :accept_loop}}
-    else
+    case :gen_tcp.accept(socket, 1000 * 60) do
+      {:ok, client_socket} ->
+        with {:ok, pid} <-
+               start_task(client_socket, state),
+             :ok <- :gen_tcp.controlling_process(client_socket, pid) do
+          Logger.debug("Accepted connection, transferred socket to #{inspect(pid)}")
+          send(pid, :socket_transferred)
+          {:noreply, state, {:continue, :accept_loop}}
+        else
+          {:error, reason} ->
+            Logger.error(
+              "Failed to transfer socket controlling for #{inspect(state.challenge)} application, reason: #{inspect(reason)}"
+            )
+
+            :gen_tcp.close(client_socket)
+            {:stop, reason}
+        end
+
       {:error, reason} ->
         Logger.error(
           "Failed to accept connection for #{inspect(state.challenge)} application, reason: #{inspect(reason)}"
@@ -85,5 +95,11 @@ defmodule ProtohackerElixir.Generic.Server do
       ProtohackerElixir.Generic.DynamicSupervisor,
       {challenge, child_args}
     )
+  end
+
+  @impl true
+  def terminate(reason, %{socket: socket}) do
+    Logger.debug("Terminating Generic.Server, reason: #{inspect(reason)}")
+    :gen_tcp.close(socket)
   end
 end

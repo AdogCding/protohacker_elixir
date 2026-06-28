@@ -101,4 +101,7 @@ defmodule SpeedDaemonTest do
              60
            ) == true
   end
+
+  test "test serial" do
+  end
 end

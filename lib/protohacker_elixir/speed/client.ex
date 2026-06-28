@@ -1,14 +1,6 @@
 defmodule ProtohackerElixir.Speed.Client do
   require Logger
   alias ProtohackerElixir.Speed.ClientMessageHandler
-  alias ProtohackerElixir.Speed.DataType.Plate
-  alias ProtohackerElixir.Speed.DataType.IAmDispatcher
-  alias ProtohackerElixir.Speed.DataType.IAmCamera
-  alias ProtohackerElixir.Speed.DataType.Error
-  alias ProtohackerElixir.Speed.SerializableUtils
-  alias ProtohackerElixir.Speed.DataType.Heartbeat
-  alias ProtohackerElixir.Speed.DataType.BadMessage
-  alias ProtohackerElixir.Speed.DataType.WantHeartbeat
   alias ProtohackerElixir.Speed.DataType
   use GenServer
 
@@ -53,22 +45,5 @@ defmodule ProtohackerElixir.Speed.Client do
       _ ->
         {:terminate}
     end
-  end
-
-  def handle_info({:setup_heartbeat_interval, interval}, %{heartbeat_interval: nil} = state) do
-    :timer.send_after(div(interval, 10), :heartbeat)
-    {:noreply, %{state | heartbeat_interval: interval}}
-  end
-
-  def handle_info(
-        {:setup_heartbeat_interval, interval},
-        %{socket: socket, heartbeat_interval: interval} = state
-      ) do
-    SerializableUtils.send_data(socket, %Error{msg: "Heartbeat already setup"})
-    {:stop, :heartbeat_already_setup, state}
-  end
-
-  def handle_info(:heartbeat, %{socket: socket}) do
-    SerializableUtils.send_data(socket, %Heartbeat{})
   end
 end

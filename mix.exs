@@ -1,4 +1,5 @@
 defmodule ProtohackerElixir.MixProject do
+  alias ProtohackerElixir.Generic.SimpleChallenge
   use Mix.Project
 
   def project do
@@ -8,7 +9,14 @@ defmodule ProtohackerElixir.MixProject do
       elixir: "~> 1.19",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      aliases: aliases()
+      aliases: aliases(),
+      test_coverage: [
+        ignore_modules: [
+          ProtohackerElixir.Web.Router.Helpers,
+          ProtohackerElixir.Web.Router,
+          SimpleChallenge
+        ]
+      ]
     ]
   end
 
