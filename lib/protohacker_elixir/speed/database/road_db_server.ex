@@ -20,7 +20,7 @@ defmodule ProtohackerElixir.Speed.Database.RoadDbServer do
 
   # 查询道路信息
   @spec query_road(integer()) :: Road.t()
-  def query_road(road) do
+  def query_road(_road) do
     :ok
   end
 

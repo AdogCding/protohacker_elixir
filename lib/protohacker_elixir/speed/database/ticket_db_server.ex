@@ -6,7 +6,7 @@ defmodule ProtohackerElixir.Speed.Database.TicketDbServer do
     GenServer.start_link(__MODULE__, args, name: __MODULE__)
   end
 
-  def init(args) do
+  def init(_args) do
     :ets.new(:ticket, [:duplicate_bag, :public, :named_table, read_concurrency: true])
   end
 
