@@ -1,4 +1,6 @@
 defmodule ProtohackerElixir.Speed.ClientMessageHandler do
+  alias ProtohackerElixir.Speed.Database.CameraRecord
+  alias ProtohackerElixir.Speed.Database.CameraRecordDbServer
   alias ProtohackerElixir.Speed.Client.ClientState
   alias ProtohackerElixir.Speed.DataType.Plate
   alias ProtohackerElixir.Speed.SerializableUtils
@@ -55,13 +57,30 @@ defmodule ProtohackerElixir.Speed.ClientMessageHandler do
     end
   end
 
-  def process_client_msg(%ClientState{role: role}, %Plate{}) do
+  def process_client_msg(
+        %ClientState{socket: socket, role: role, road: road, mile: mile} = client_state,
+        %Plate{
+          plate: plate,
+          timestamp: timestamp
+        }
+      ) do
     case role do
       :camera ->
-        :ok
+        # 保存接受到监控记录
+        CameraRecordDbServer.insert_camera_record(%CameraRecord{
+          plate: plate,
+          timestamp: timestamp,
+          road: road,
+          mile: mile
+        })
 
       _ ->
-        :error
+        :gen_tcp.send(
+          socket,
+          SerializableUtils.serialize(%Error{msg: "Plate cannot be sent to #{role}"})
+        )
+
+        {:error, client_state}
     end
   end
 
