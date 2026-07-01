@@ -1,5 +1,5 @@
-defmodule ProtohackerElixir.Speed.Database.IssuedTicketRecordDbServer do
-  alias ProtohackerElixir.Speed.Database.IssuedTicketRecord
+defmodule ProtohackerElixir.Speed.Database.IssuedTicketDbServer do
+  alias ProtohackerElixir.Speed.Database.IssuedTicketDbServer.IssuedTicketRecord
 
   use GenServer
 

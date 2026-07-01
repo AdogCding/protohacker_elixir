@@ -1,5 +1,4 @@
 defmodule ProtohackerElixir.Speed.TicketManager do
-  alias Credo.Check.Consistency.SpaceAroundOperators.SpaceHelper
   # 负责罚单的产生
   use GenServer
 

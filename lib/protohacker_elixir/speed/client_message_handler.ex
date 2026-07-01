@@ -1,5 +1,5 @@
 defmodule ProtohackerElixir.Speed.ClientMessageHandler do
-  alias ProtohackerElixir.Speed.Database.CameraRecord
+  alias ProtohackerElixir.Speed.Database.CameraRecordDbServer.CameraRecord
   alias ProtohackerElixir.Speed.Database.CameraRecordDbServer
   alias ProtohackerElixir.Speed.Client.ClientState
   alias ProtohackerElixir.Speed.DataType.Plate

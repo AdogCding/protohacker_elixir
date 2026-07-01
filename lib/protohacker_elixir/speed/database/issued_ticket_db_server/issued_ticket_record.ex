@@ -1,4 +1,4 @@
-defmodule ProtohackerElixir.Speed.Database.IssuedTicketRecord do
+defmodule ProtohackerElixir.Speed.Database.IssuedTicketDbServer.IssuedTicketRecord do
   # 存储发送过的罚单
   defstruct [:plate, :day, :ticket_id]
 

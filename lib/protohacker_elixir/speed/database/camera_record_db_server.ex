@@ -1,5 +1,5 @@
 defmodule ProtohackerElixir.Speed.Database.CameraRecordDbServer do
-  alias ProtohackerElixir.Speed.Database.CameraRecord
+  alias ProtohackerElixir.Speed.Database.CameraRecordDbServer.CameraRecord
   use GenServer
 
   def start_link(args) do

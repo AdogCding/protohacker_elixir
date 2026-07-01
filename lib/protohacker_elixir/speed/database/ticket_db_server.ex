@@ -1,5 +1,5 @@
 defmodule ProtohackerElixir.Speed.Database.TicketDbServer do
-  alias ProtohackerElixir.Speed.Database.Ticket
+  alias ProtohackerElixir.Speed.Database.TicketDbServer.Ticket
   use GenServer
 
   def start_link(args) do

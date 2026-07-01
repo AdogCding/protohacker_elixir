@@ -1,4 +1,4 @@
-defmodule ProtohackerElixir.Speed.Witness do
+defmodule ProtohackerElixir.Speed.SpeedLimitHelper.Witness do
   defstruct [:plate, :mile1, :timestamp1, :mile2, :timestamp2]
 
   @type t :: %__MODULE__{

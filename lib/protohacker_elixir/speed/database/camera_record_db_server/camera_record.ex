@@ -1,4 +1,4 @@
-defmodule ProtohackerElixir.Speed.Database.CameraRecord do
+defmodule ProtohackerElixir.Speed.Database.CameraRecordDbServer.CameraRecord do
   @enforce_keys [:plate, :road, :mile, :timestamp]
   defstruct [:plate, :road, :mile, :timestamp]
 

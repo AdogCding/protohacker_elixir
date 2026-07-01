@@ -1,5 +1,5 @@
 defmodule ProtohackerElixir.Speed.Database.RoadDbServer do
-  alias ProtohackerElixir.Speed.Database.Road
+  alias ProtohackerElixir.Speed.Database.RoadDbServer.Road
   use GenServer
 
   def start_link(args) do
@@ -20,12 +20,17 @@ defmodule ProtohackerElixir.Speed.Database.RoadDbServer do
 
   # 查询道路信息
   @spec query_road(integer()) :: Road.t()
-  def query_road(_road) do
-    :ok
+  def query_road(road) do
+    GenServer.call(__MODULE__, {:query_road, road})
   end
 
   def handle_call({:insert_road, %Road{road: road, limit: limit}}, _from, state) do
     :ets.insert_new(:road, {road, limit})
     {:reply, {:ok}, state}
+  end
+
+  def handle_call({:query_road, road}, _from, state) do
+    road = :ets.lookup(:road, road)
+    {:reply, road, state}
   end
 end

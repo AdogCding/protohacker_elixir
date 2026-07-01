@@ -1,6 +1,6 @@
 defmodule SpeedDaemonTest do
   alias ProtohackerElixir.Speed.DataType.BadMessage
-  alias ProtohackerElixir.Speed.Witness
+  alias ProtohackerElixir.Speed.SpeedLimitHelper.Witness
   alias ProtohackerElixir.Speed.SpeedLimitHelper
   alias ProtohackerElixir.Speed.DataType.Plate
   alias ProtohackerElixir.Speed.DataType.Error

@@ -1,5 +1,5 @@
 defmodule ProtohackerElixir.Speed.SpeedLimitHelper do
-  alias ProtohackerElixir.Speed.Witness
+  alias ProtohackerElixir.Speed.SpeedLimitHelper.Witness
 
   @spec calculate_speed(Witness.t()) :: integer()
   def calculate_speed(%Witness{
