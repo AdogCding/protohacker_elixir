@@ -14,15 +14,15 @@ defmodule ProtohackerElixir.Speed.Database.CameraRecordDbServer do
   end
 
   # 保存摄像头的拍摄记录
-  @spec insert_camera_record(CameraRecord.t()) :: {:ok} | {:error}
+  @spec insert_camera_record(CameraRecord.t()) :: :ok | :error
   def insert_camera_record(camera_record) do
     GenServer.call(__MODULE__, {:insert_camera_record, camera_record})
   end
 
   # 查询摄像头拍摄记录
-  @spec query_camera_record(String.t(), integer()) :: [CameraRecord.t()]
-  def query_camera_record(plate, road) do
-    GenServer.call(__MODULE__, {:query_camera_record, {plate, road}})
+  @spec query_camera_record_by_plate(String.t()) :: [CameraRecord.t()]
+  def query_camera_record_by_plate(plate) do
+    GenServer.call(__MODULE__, {:query_camera_record_by_plate, plate})
   end
 
   def handle_call(
@@ -32,11 +32,11 @@ defmodule ProtohackerElixir.Speed.Database.CameraRecordDbServer do
         state
       ) do
     :ets.insert(:camera_record, {plate, road, mile, timestamp})
-    {:reply, {:ok}, state}
+    {:reply, :ok, state}
   end
 
-  def handle_call({:query_camera_record, {plate, road}}, _from, state) do
-    camera_records = :ets.lookup(:camera_record, {plate, road})
+  def handle_call({:query_camera_record_by_plate, plate}, _from, state) do
+    camera_records = :ets.lookup(:camera_record, plate)
     {:reply, camera_records |> Enum.map(&CameraRecord.new(&1)), state}
   end
 end

@@ -1,7 +1,7 @@
 defmodule ProtohackerElixir.Speed.Client do
   require Logger
+  alias ProtohackerElixir.Speed.Serializable
   alias ProtohackerElixir.Speed.Client.ClientState
-  alias ProtohackerElixir.Speed.SerializableUtils
   alias ProtohackerElixir.Speed.Client.MessageHandler
   alias ProtohackerElixir.Speed.DataType
   use GenServer
@@ -40,7 +40,7 @@ defmodule ProtohackerElixir.Speed.Client do
   end
 
   def handle_info(:heartbeat, %{socket: socket} = state) do
-    :gen_tcp.send(socket, SerializableUtils.serialize(%DataType.Heartbeat{}))
+    :gen_tcp.send(socket, Serializable.Helper.serialize(%DataType.Heartbeat{}))
     {:noreply, state}
   end
 

@@ -1,4 +1,5 @@
 defmodule ProtohackerElixir.Speed.Client.MessageHandler do
+  alias ProtohackerElixir.Speed.Serializable
   alias ProtohackerElixir.Speed.Database.CameraRecordDbServer.CameraRecord
   alias ProtohackerElixir.Speed.Database.CameraRecordDbServer
   alias ProtohackerElixir.Speed.Client.ClientState
@@ -15,7 +16,7 @@ defmodule ProtohackerElixir.Speed.Client.MessageHandler do
         %WantHeartbeat{interval: interval} = msg
       ) do
     Process.send(pid, {:setup_hearbeat, interval}, [])
-    :gen_tcp.send(socket, SerializableUtils.serialize(msg))
+    :gen_tcp.send(socket, Serializable.Helper.serialize(msg))
   end
 
   @spec process_client_msg(ClientState.t(), IAmCamera.t()) ::
@@ -31,7 +32,7 @@ defmodule ProtohackerElixir.Speed.Client.MessageHandler do
       _ ->
         :gen_tcp.send(
           socket,
-          SerializableUtils.serialize(%Error{msg: "I am identified as #{role}"})
+          Serializable.Helper.serialize(%Error{msg: "I am identified as #{role}"})
         )
 
         {:error, client_state}
@@ -50,7 +51,7 @@ defmodule ProtohackerElixir.Speed.Client.MessageHandler do
       _ ->
         :gen_tcp.send(
           socket,
-          SerializableUtils.serialize(%Error{msg: "I am identified as #{role}"})
+          Serializable.Helper.serialize(%Error{msg: "I am identified as #{role}"})
         )
 
         {:error, client_state}
@@ -77,7 +78,7 @@ defmodule ProtohackerElixir.Speed.Client.MessageHandler do
       _ ->
         :gen_tcp.send(
           socket,
-          SerializableUtils.serialize(%Error{msg: "Plate cannot be sent to #{role}"})
+          Serializable.Helper.serialize(%Error{msg: "Plate cannot be sent to #{role}"})
         )
 
         {:error, client_state}

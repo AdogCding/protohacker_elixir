@@ -1,4 +1,6 @@
 defmodule ProtohackerElixir.Speed.Serializable.Helper do
+  alias ProtohackerElixir.Speed.Serializable
+
   def encode_str(msg) when length(msg) > 255 do
     raise RuntimeError, message: "#{msg} exceed 255 size"
   end
@@ -7,5 +9,10 @@ defmodule ProtohackerElixir.Speed.Serializable.Helper do
   def encode_str(message) do
     size_of_msg = byte_size(message)
     <<size_of_msg::unsigned-8, message::binary>>
+  end
+
+  @spec serialize(Serializable.t()) :: binary()
+  def serialize(data) do
+    Serializable.encode(data)
   end
 end

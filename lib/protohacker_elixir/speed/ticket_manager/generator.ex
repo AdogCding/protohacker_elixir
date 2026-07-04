@@ -13,7 +13,7 @@ defmodule ProtohackerElixir.Speed.TicketManager.Generator do
   # 核心逻辑，判断是否要产生罚单
   @spec try_generate_ticket(String.t(), integer()) :: [Ticket.t()]
   def try_generate_ticket(plate, road) do
-    camera_records = CameraRecordDbServer.query_camera_record(plate, road)
+    camera_records = CameraRecordDbServer.query_camera_record(%{plate: plate, road: road})
     road = RoadDbServer.query_road(road)
     lookingfor_possible_illegal_camera_record(camera_records, [], road)
   end

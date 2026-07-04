@@ -1,4 +1,6 @@
 defmodule SpeedDaemonTest do
+  alias ProtohackerElixir.Speed.Database.CameraRecordDbServer.CameraRecord
+  alias ProtohackerElixir.Speed.Database.CameraRecordDbServer
   alias ProtohackerElixir.Speed.DataType.BadMessage
   alias ProtohackerElixir.Speed.SpeedLimitHelper.Witness
   alias ProtohackerElixir.Speed.SpeedLimitHelper
@@ -8,6 +10,11 @@ defmodule SpeedDaemonTest do
   alias ProtohackerElixir.Speed.DataType
   alias ProtohackerElixir.Speed.Serializable
   use ExUnit.Case
+
+  setup do
+    camera_record_db_server = start_supervised!(CameraRecordDbServer)
+    %{camera_record_db_server: camera_record_db_server}
+  end
 
   test "parse error message" do
     assert DataType.parse(<<0x10, 0x03, 0x62, 0x61, 0x64>>) == {:ok, %Error{msg: "bad"}, <<>>}
@@ -102,6 +109,19 @@ defmodule SpeedDaemonTest do
            ) == true
   end
 
-  test "test want heartbeat" do
+  test "test camera db" do
+    simple_camera_record = %CameraRecord{
+      plate: "TEST01",
+      road: 1,
+      mile: 8,
+      timestamp: 0
+    }
+
+    assert :ok ==
+             CameraRecordDbServer.insert_camera_record(simple_camera_record)
+
+    assert CameraRecordDbServer.query_camera_record_by_plate("TEST01") == [
+             simple_camera_record
+           ]
   end
 end
