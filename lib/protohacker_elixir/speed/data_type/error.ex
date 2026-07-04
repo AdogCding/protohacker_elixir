@@ -1,5 +1,5 @@
 defmodule ProtohackerElixir.Speed.DataType.Error do
-  alias ProtohackerElixir.Speed.Message
+  alias ProtohackerElixir.Speed.DataType.Message
   @behaviour Message
   defstruct msg: nil
 

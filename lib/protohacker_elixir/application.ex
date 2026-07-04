@@ -10,7 +10,7 @@ defmodule ProtohackerElixir.Application do
     children = [
       {Task.Supervisor, name: ProtohackerElixir.Generic.TaskSupervisor},
       {DynamicSupervisor, name: ProtohackerElixir.Generic.DynamicSupervisor},
-      {Registry, name: ProtohackerElixir.Generic.Registry},
+      {Registry, name: ProtohackerElixir.Generic.Registry, keys: :duplicate},
       {Phoenix.PubSub, name: ProtohackerElixir.PubSub},
       ProtohackerElixir.Web.Endpoint
     ]

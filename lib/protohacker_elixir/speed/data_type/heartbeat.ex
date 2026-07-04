@@ -1,6 +1,6 @@
 defmodule ProtohackerElixir.Speed.DataType.Heartbeat do
   defstruct []
-  @behaviour ProtohackerElixir.Speed.Message
+  @behaviour ProtohackerElixir.Speed.DataType.Message
 
   @type t :: %__MODULE__{}
 

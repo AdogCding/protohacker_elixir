@@ -1,5 +1,5 @@
 defmodule ProtohackerElixir.Speed.DataType.IAmCamera do
-  alias ProtohackerElixir.Speed.Message
+  alias ProtohackerElixir.Speed.DataType.Message
   defstruct road: nil, mile: nil, limit: nil
   @behaviour Message
 

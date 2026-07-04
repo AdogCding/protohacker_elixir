@@ -4,6 +4,7 @@ defmodule ProtohackerElixir.Speed.Client do
   alias ProtohackerElixir.Speed.Client.ClientState
   alias ProtohackerElixir.Speed.Client.MessageHandler
   alias ProtohackerElixir.Speed.DataType
+  alias ProtohackerElixir.Speed.TicketHelper
   use GenServer
 
   def start_link(init_args) do
@@ -76,5 +77,21 @@ defmodule ProtohackerElixir.Speed.Client do
       _ ->
         {:terminate}
     end
+  end
+
+  def handle_cast(
+        {:issue_ticket, tickets},
+        %{
+          socket: socket
+        }
+      ) do
+    # only one ticket for a plate per day, check is there already a ticket
+    for ticket <- tickets do
+      if TicketHelper.issuable?(ticket) do
+        TicketHelper.send_ticket(socket, ticket)
+      end
+    end
+
+    {:noreply, %{socket: socket}}
   end
 end

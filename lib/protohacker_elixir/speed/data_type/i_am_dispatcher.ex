@@ -1,5 +1,5 @@
 defmodule ProtohackerElixir.Speed.DataType.IAmDispatcher do
-  alias ProtohackerElixir.Speed.Message
+  alias ProtohackerElixir.Speed.DataType.Message
   defstruct numroads: nil, roads: []
   @behaviour Message
 

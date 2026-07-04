@@ -1,5 +1,6 @@
 defmodule ProtohackerElixir.Speed.DataType.Ticket do
-  alias ProtohackerElixir.Speed.Message
+  alias ProtohackerElixir.Speed.DataType.Message
+  @enforce_keys [:plate, :road, :mile1, :timestamp1, :mile2, :timestamp2, :speed]
 
   defstruct plate: nil,
             road: nil,

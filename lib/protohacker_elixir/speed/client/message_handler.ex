@@ -1,10 +1,10 @@
 defmodule ProtohackerElixir.Speed.Client.MessageHandler do
+  alias ProtohackerElixir.Speed.TicketManager
   alias ProtohackerElixir.Speed.Serializable
   alias ProtohackerElixir.Speed.Database.CameraRecordDbServer.CameraRecord
   alias ProtohackerElixir.Speed.Database.CameraRecordDbServer
   alias ProtohackerElixir.Speed.Client.ClientState
   alias ProtohackerElixir.Speed.DataType.Plate
-  alias ProtohackerElixir.Speed.SerializableUtils
   alias ProtohackerElixir.Speed.DataType.IAmDispatcher
   alias ProtohackerElixir.Speed.DataType.IAmCamera
   alias ProtohackerElixir.Speed.DataType.WantHeartbeat
@@ -74,6 +74,9 @@ defmodule ProtohackerElixir.Speed.Client.MessageHandler do
           road: road,
           mile: mile
         })
+
+        TicketManager.try_generate_ticket(plate, road)
+        :ok
 
       _ ->
         :gen_tcp.send(

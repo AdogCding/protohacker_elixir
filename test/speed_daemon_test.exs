@@ -97,14 +97,18 @@ defmodule SpeedDaemonTest do
   end
 
   test "is exceed speed limit" do
+    witness = %Witness{
+      plate: "TEST01",
+      mile1: 8,
+      timestamp1: 0,
+      mile2: 9,
+      timestamp2: 45
+    }
+
+    assert SpeedLimitHelper.calculate_speed(witness) == 8000
+
     assert SpeedLimitHelper.exceed_limit?(
-             %Witness{
-               plate: "TEST01",
-               mile1: 8,
-               timestamp1: 0,
-               mile2: 9,
-               timestamp2: 45
-             },
+             witness,
              60
            ) == true
   end

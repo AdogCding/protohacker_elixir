@@ -1,5 +1,5 @@
 defmodule ProtohackerElixir.Speed.DataType.Plate do
-  alias ProtohackerElixir.Speed.Message
+  alias ProtohackerElixir.Speed.DataType.Message
   defstruct plate: nil, timestamp: nil
 
   @behaviour Message

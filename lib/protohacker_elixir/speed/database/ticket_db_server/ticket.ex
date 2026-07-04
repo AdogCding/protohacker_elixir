@@ -1,5 +1,6 @@
 defmodule ProtohackerElixir.Speed.Database.TicketDbServer.Ticket do
-  defstruct [:plate, :road, :mile1, :mile2, :timestamp1, :timestamp2, :issued?, :id]
+  @enforce_keys [:plate, :road, :mile1, :mile2, :timestamp1, :timestamp2, :is_issued, :speed, :id]
+  defstruct [:plate, :road, :mile1, :mile2, :timestamp1, :timestamp2, :is_issued, :speed, :id]
 
   @type t :: %__MODULE__{
           plate: String.t(),
@@ -8,7 +9,8 @@ defmodule ProtohackerElixir.Speed.Database.TicketDbServer.Ticket do
           mile2: integer(),
           timestamp1: integer(),
           timestamp2: integer(),
-          issued?: boolean(),
+          is_issued: boolean(),
+          speed: integer(),
           id: String.t()
         }
 end
