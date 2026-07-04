@@ -2,7 +2,7 @@ defmodule ProtohackerElixir.Speed.Client do
   require Logger
   alias ProtohackerElixir.Speed.Client.ClientState
   alias ProtohackerElixir.Speed.SerializableUtils
-  alias ProtohackerElixir.Speed.ClientMessageHandler
+  alias ProtohackerElixir.Speed.Client.MessageHandler
   alias ProtohackerElixir.Speed.DataType
   use GenServer
 
@@ -22,6 +22,11 @@ defmodule ProtohackerElixir.Speed.Client do
        heartbeat_interval: nil,
        pid: self()
      }, {:continue, :setopts}}
+  end
+
+  @spec issue_ticket([DataType.Ticket.t()]) :: :ok
+  def issue_ticket(_tickets) do
+    :ok
   end
 
   def handle_continue(:setopts, state) do
@@ -58,7 +63,7 @@ defmodule ProtohackerElixir.Speed.Client do
     {new_client_state, is_ok} =
       messages
       |> Enum.reduce_while({client_state, true}, fn msg, {client_state, is_ok} ->
-        case ClientMessageHandler.process_client_msg(client_state, msg) do
+        case MessageHandler.process_client_msg(client_state, msg) do
           {:ok, client_state} -> {:cont, {client_state, is_ok}}
           {:error, client_state} -> {:halt, {client_state, false}}
         end

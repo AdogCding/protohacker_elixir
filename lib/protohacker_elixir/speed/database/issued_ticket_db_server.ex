@@ -18,6 +18,11 @@ defmodule ProtohackerElixir.Speed.Database.IssuedTicketDbServer do
     GenServer.call(__MODULE__, {:insert_issued_ticket_record, issued_ticket_record})
   end
 
+  @spec query_issued_ticket(map()) :: any()
+  def query_issued_ticket(%{plate: plate, day: day}) do
+    :ets.lookup(:issued_ticket_record, {plate, day})
+  end
+
   def handle_call(
         {:insert_issued_ticket_record,
          %IssuedTicketRecord{plate: plate, day: day, ticket_id: ticket_id}},

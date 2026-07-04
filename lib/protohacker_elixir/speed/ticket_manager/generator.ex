@@ -1,4 +1,4 @@
-defmodule ProtohackerElixir.Speed.TicketManager.TicketGenerator do
+defmodule ProtohackerElixir.Speed.TicketManager.Generator do
   @moduledoc """
   负责罚单的产生
   """
@@ -11,14 +11,14 @@ defmodule ProtohackerElixir.Speed.TicketManager.TicketGenerator do
   alias ProtohackerElixir.Speed.DataType.Ticket
 
   # 核心逻辑，判断是否要产生罚单
-  @spec try_generate_ticket(String.t(), integer()) :: Ticket.t()
+  @spec try_generate_ticket(String.t(), integer()) :: [Ticket.t()]
   def try_generate_ticket(plate, road) do
     camera_records = CameraRecordDbServer.query_camera_record(plate, road)
     road = RoadDbServer.query_road(road)
-    lookingfor_possible_illegal_camera_record(road, camera_records, [])
+    lookingfor_possible_illegal_camera_record(camera_records, [], road)
   end
 
-  defp lookingfor_possible_illegal_camera_record([], result, road) do
+  defp lookingfor_possible_illegal_camera_record([], result, _road) do
     result
   end
 
@@ -42,9 +42,9 @@ defmodule ProtohackerElixir.Speed.TicketManager.TicketGenerator do
       end)
 
     lookingfor_possible_illegal_camera_record(
-      road,
+      if(bad_camera_record |> Enum.empty?(), do: result, else: result ++ bad_camera_record),
       tail,
-      if(bad_camera_record |> Enum.empty?(), do: result, else: result ++ bad_camera_record)
+      road
     )
   end
 end

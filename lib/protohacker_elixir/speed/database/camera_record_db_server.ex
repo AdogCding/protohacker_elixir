@@ -36,7 +36,7 @@ defmodule ProtohackerElixir.Speed.Database.CameraRecordDbServer do
   end
 
   def handle_call({:query_camera_record, {plate, road}}, _from, state) do
-    camera_records = :ets.match_object(:camera_record, {plate, road, :_, :_})
+    camera_records = :ets.lookup(:camera_record, {plate, road})
     {:reply, camera_records |> Enum.map(&CameraRecord.new(&1)), state}
   end
 end

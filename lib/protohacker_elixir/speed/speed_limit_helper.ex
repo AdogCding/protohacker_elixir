@@ -1,7 +1,7 @@
 defmodule ProtohackerElixir.Speed.SpeedLimitHelper do
   alias ProtohackerElixir.Speed.SpeedLimitHelper.Witness
 
-  @spec calculate_speed(Witness.t()) :: integer()
+  @spec calculate_speed(Witness.t()) :: float()
   def calculate_speed(%Witness{
         mile1: mile1,
         mile2: mile2,
@@ -11,6 +11,11 @@ defmodule ProtohackerElixir.Speed.SpeedLimitHelper do
     distance = abs(mile2 - mile1)
     interval = abs(timestamp2 - timestamp1) / 60 / 60
     distance / interval * 100
+  end
+
+  @spec calculate_day(integer()) :: integer()
+  def calculate_day(timestamp) do
+    floor(timestamp / 86400)
   end
 
   @spec exceed_limit?(Witness.t(), float()) :: boolean()
