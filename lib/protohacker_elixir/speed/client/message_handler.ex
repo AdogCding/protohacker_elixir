@@ -2,6 +2,7 @@ defmodule ProtohackerElixir.Speed.Client.MessageHandler do
   alias ProtohackerElixir.Speed.TicketManager
   alias ProtohackerElixir.Speed.Serializable
   alias ProtohackerElixir.Speed.Database.CameraRecordDbServer.CameraRecord
+  alias ProtohackerElixir.Speed.Database
   alias ProtohackerElixir.Speed.Client.ClientState
   alias ProtohackerElixir.Speed.DataType.Plate
   alias ProtohackerElixir.Speed.DataType.IAmDispatcher
@@ -27,7 +28,14 @@ defmodule ProtohackerElixir.Speed.Client.MessageHandler do
     case role do
       :unrecognized ->
         {:ok, %ClientState{client_state | role: :camera, road: road, mile: mile, limit: limit}}
-        Registry.register(ProtohackerElixir.Generic.Registry, {road, mile}, client_state.pid)
+        # 保存道路信息
+        Database.RoadDbServer.insert_road(%Database.RoadDbServer.Road{
+          road: road,
+          limit: limit
+        })
+
+        # 注册摄像头信息
+        Registry.register(ProtohackerElixir.Speed.CameraRegistry, road, {self()})
 
       _ ->
         :gen_tcp.send(

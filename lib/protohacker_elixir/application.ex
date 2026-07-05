@@ -11,6 +11,8 @@ defmodule ProtohackerElixir.Application do
       {Task.Supervisor, name: ProtohackerElixir.Generic.TaskSupervisor},
       {DynamicSupervisor, name: ProtohackerElixir.Generic.DynamicSupervisor},
       {Registry, name: ProtohackerElixir.Generic.Registry, keys: :duplicate},
+      {Registry, name: ProtohackerElixir.Speed.CameraRegistry, keys: :duplicate},
+      {Registry, name: ProtohackerElixir.Speed.DispatcherRegistry, keys: :duplicate},
       {Phoenix.PubSub, name: ProtohackerElixir.PubSub},
       ProtohackerElixir.Web.Endpoint
     ]
