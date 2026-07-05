@@ -25,9 +25,9 @@ defmodule ProtohackerElixir.Speed.Client do
      }, {:continue, :setopts}}
   end
 
-  @spec issue_ticket([DataType.Ticket.t()]) :: :ok
-  def issue_ticket(_tickets) do
-    :ok
+  @spec issue_ticket(pid(), DataType.Ticket.t()) :: :ok
+  def issue_ticket(pid, ticket) do
+    GenServer.cast(pid, {:issue_ticket, ticket})
   end
 
   def handle_continue(:setopts, state) do

@@ -56,6 +56,11 @@ defmodule ProtohackerElixir.Speed.Client.MessageHandler do
       :unrecognized ->
         {:ok, %ClientState{client_state | role: :dispatcher, roads: roads}}
 
+        for r <- roads do
+          # 注册调度器信息
+          Registry.register(ProtohackerElixir.Speed.DispatcherRegistry, r, {self()})
+        end
+
       _ ->
         :gen_tcp.send(
           socket,
