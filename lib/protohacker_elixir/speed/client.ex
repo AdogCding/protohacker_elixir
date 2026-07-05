@@ -88,10 +88,14 @@ defmodule ProtohackerElixir.Speed.Client do
     # only one ticket for a plate per day, check is there already a ticket
     for ticket <- tickets do
       if TicketHelper.issuable?(ticket) do
-        TicketHelper.send_ticket(socket, ticket)
+        send_ticket(socket, ticket)
       end
     end
 
     {:noreply, %{socket: socket}}
+  end
+
+  defp send_ticket(socket, ticket) do
+    :gen_tcp.send(socket, Serializable.Helper.serialize(ticket))
   end
 end

@@ -58,6 +58,11 @@ defmodule ProtohackerElixir.Speed.Client.MessageHandler do
 
         for r <- roads do
           # 注册调度器信息
+          # 查询没有暂存的没有开具的罚单
+          tickets_of_road =
+            Database.TicketDbServer.query_ticket_by_road(r)
+            |> Enum.filter(fn ticket -> ticket.is_issued == false end)
+
           Registry.register(ProtohackerElixir.Speed.DispatcherRegistry, r, {self()})
         end
 

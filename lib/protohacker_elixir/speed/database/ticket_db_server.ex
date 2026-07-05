@@ -16,10 +16,10 @@ defmodule ProtohackerElixir.Speed.Database.TicketDbServer do
     GenServer.call(__MODULE__, {:insert_ticket, ticket})
   end
 
-  # 查询某牌某日是否有罚单
-  @spec query_ticket(String.t(), integer()) :: [Ticket.t()]
-  def query_ticket(plate, day) do
-    GenServer.call(__MODULE__, {:query_ticket, {plate, day}})
+  # 查询某路段的罚单
+  @spec query_ticket_by_road(integer()) :: [Ticket.t()]
+  def query_ticket_by_road(road) do
+    GenServer.call(__MODULE__, {:query_ticket, road})
   end
 
   def handle_call(
@@ -30,16 +30,38 @@ defmodule ProtohackerElixir.Speed.Database.TicketDbServer do
            mile1: mile1,
            mile2: mile2,
            timestamp1: timestamp1,
-           timestamp2: timestamp2
+           timestamp2: timestamp2,
+           speed: speed
          }},
         _from,
         state
       ) do
     :ets.insert(
       :ticket,
-      {plate, road, mile1, mile2, timestamp1, timestamp2, false, :crypto.strong_rand_bytes(16)}
+      {plate, road, mile1, mile2, timestamp1, timestamp2, speed, false,
+       :crypto.strong_rand_bytes(16)}
     )
 
     {:reply, {:ok}, state}
+  end
+
+  def handle_call({:query_ticket, road}, _from, state) do
+    tickets =
+      :ets.match_object(:ticket, {:_, road, :_, :_, :_, :_, :_, :_})
+      |> Enum.map(fn {plate, road, mile1, mile2, timestamp1, timestamp2, speed, is_issued, id} ->
+        %Ticket{
+          plate: plate,
+          road: road,
+          mile1: mile1,
+          mile2: mile2,
+          timestamp1: timestamp1,
+          timestamp2: timestamp2,
+          speed: speed,
+          is_issued: is_issued,
+          id: id
+        }
+      end)
+
+    {:reply, tickets, state}
   end
 end

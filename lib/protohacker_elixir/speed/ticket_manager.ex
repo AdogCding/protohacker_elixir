@@ -30,17 +30,19 @@ defmodule ProtohackerElixir.Speed.TicketManager do
 
   @spec send_ticket(ProtohackerElixir.Speed.Database.TicketDbServer.Ticket.t()) ::
           :ok
-  defp send_ticket(%TicketDbServer.Ticket{
-         plate: plate,
-         road: road,
-         mile1: mile1,
-         mile2: mile2,
-         timestamp1: timestamp1,
-         timestamp2: timestamp2,
-         speed: speed
-       }) do
+  defp send_ticket(
+         %TicketDbServer.Ticket{
+           plate: plate,
+           road: road,
+           mile1: mile1,
+           mile2: mile2,
+           timestamp1: timestamp1,
+           timestamp2: timestamp2,
+           speed: speed
+         } = ticket_entity
+       ) do
     # 转成报文的数据格式
-    tk = %DataType.Ticket{
+    tk_msg = %DataType.Ticket{
       plate: plate,
       timestamp1: timestamp1,
       timestamp2: timestamp2,
@@ -50,11 +52,16 @@ defmodule ProtohackerElixir.Speed.TicketManager do
       speed: speed
     }
 
-    Registry.dispatch(ProtohackerElixir.Speed.DispatcherRegistry, road, fn entries ->
-      for {pid, _} <- entries do
-        Client.issue_ticket(pid, tk)
-      end
-    end)
+    # 找到监控这个路段的第一个进程
+    dispatchers = Registry.lookup(ProtohackerElixir.Speed.DispatcherRegistry, road)
+
+    case dispatchers do
+      [{pid, _}] ->
+        Client.issue_ticket(pid, tk_msg)
+
+      [] ->
+        TicketDbServer.insert_ticket(ticket_entity)
+    end
 
     # 发送完毕后，记录到已发送的罚单数据库中
   end
