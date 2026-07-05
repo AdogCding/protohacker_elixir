@@ -31,7 +31,7 @@ defmodule ProtohackerElixir.Speed.SpeedLimitHelper do
     Enum.to_list(min(day1, day2)..max(day1, day2))
   end
 
-  @spec exceed_limit?(Witness.t(), float()) :: boolean()
+  @spec exceed_limit?(Witness.t(), integer()) :: boolean()
   def exceed_limit?(witness, limit) do
     speed = calculate_mph_speed(witness)
     diff = speed - limit

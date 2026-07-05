@@ -12,69 +12,53 @@ defmodule ProtohackerElixir.Speed.TicketManager.Generator do
   alias ProtohackerElixir.Speed.Database.TicketDbServer.Ticket
 
   # 核心逻辑，判断是否要产生罚单
-  @spec try_generate_ticket(String.t(), integer()) :: [Ticket.t()]
-  def try_generate_ticket(plate, road) do
+  @spec try_generate_ticket(CameraRecord.t()) :: [Ticket.t()]
+  def try_generate_ticket(
+        %CameraRecord{plate: plate, road: road, mile: mile1, timestamp: timestamp1} =
+          camera_record
+      ) do
     camera_records = CameraRecordDbServer.query_camera_record_by_plate(plate)
     road = RoadDbServer.query_road(road)
 
-    lookingfor_possible_illegal_camera_record(camera_records, [], road)
-    |> Enum.map(fn {%CameraRecord{plate: plate, road: road, mile: mile1, timestamp: timestamp1},
-                    %CameraRecord{mile: mile2, timestamp: timestamp2}} ->
-      %Ticket{
-        plate: plate,
-        road: road,
-        mile1: mile1,
-        timestamp1: timestamp1,
-        timestamp2: timestamp2,
-        mile2: mile2,
-        is_issued: false,
-        id: Tools.uuid(),
-        speed:
-          SpeedLimitHelper.calculate_speed(%Witness{
+    if camera_records |> Enum.empty?() do
+      CameraRecordDbServer.insert_camera_record(camera_record)
+    else
+      bad_camera_records =
+        camera_records |> Enum.filter(&bad_camera_record?(road, {&1, camera_record}))
+
+      for %CameraRecord{mile: mile2, timestamp: timestamp2} <- bad_camera_records,
+          do: %Ticket{
+            plate: plate,
+            road: road,
             mile1: mile1,
-            mile2: mile2,
-            plate: plate,
             timestamp1: timestamp1,
-            timestamp2: timestamp2
-          })
-      }
-    end)
+            timestamp2: timestamp2,
+            mile2: mile2,
+            is_issued: false,
+            id: Tools.uuid(),
+            speed:
+              SpeedLimitHelper.calculate_speed(%Witness{
+                mile1: mile1,
+                mile2: mile2,
+                plate: plate,
+                timestamp1: timestamp1,
+                timestamp2: timestamp2
+              })
+          }
+    end
   end
 
-  defp lookingfor_possible_illegal_camera_record([], result, _road) do
-    result
-  end
-
-  @spec lookingfor_possible_illegal_camera_record(
-          [CameraRecord.t()],
-          [CameraRecord.t()],
-          Road.t()
-        ) :: [CameraRecord.t()]
-  defp lookingfor_possible_illegal_camera_record(
-         [%CameraRecord{mile: mile, timestamp: timestamp} = base_camera_record | tail],
-         result,
-         %Road{limit: limit} = road
-       ) do
-    bad_camera_record =
-      Enum.filter(tail, fn %CameraRecord{plate: plate, mile: cr_mile, timestamp: cr_timestamp} ->
-        SpeedLimitHelper.exceed_limit?(
-          %Witness{
-            plate: plate,
-            mile1: cr_mile,
-            mile2: mile,
-            timestamp1: cr_timestamp,
-            timestamp2: timestamp
-          },
-          limit / 1
-        )
-      end)
-
-    bad_camera_record_pairs = for i <- bad_camera_record, do: {base_camera_record, i}
-
-    lookingfor_possible_illegal_camera_record(
-      if(bad_camera_record |> Enum.empty?(), do: result, else: result ++ bad_camera_record_pairs),
-      tail,
-      road
+  @spec bad_camera_record?(Road.t(), {CameraRecord.t(), CameraRecord.t()}) :: boolean()
+  def bad_camera_record?(%Road{limit: limit}, {cr1, cr2}) do
+    SpeedLimitHelper.exceed_limit?(
+      %Witness{
+        mile1: cr1.mile,
+        mile2: cr2.mile,
+        plate: cr1.plate,
+        timestamp1: cr1.timestamp,
+        timestamp2: cr2.timestamp
+      },
+      limit
     )
   end
 end

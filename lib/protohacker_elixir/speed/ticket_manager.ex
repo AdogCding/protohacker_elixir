@@ -1,4 +1,5 @@
 defmodule ProtohackerElixir.Speed.TicketManager do
+  alias ProtohackerElixir.Speed.Database.CameraRecordDbServer.CameraRecord
   alias ProtohackerElixir.Speed.TicketManager.Generator
   alias ProtohackerElixir.Speed.Client
   # 负责罚单的产生
@@ -12,14 +13,14 @@ defmodule ProtohackerElixir.Speed.TicketManager do
     {:ok, init_arg}
   end
 
-  @spec try_generate_ticket(String.t(), integer()) :: :ok
-  def try_generate_ticket(plate, road) do
-    GenServer.cast(ProtohackerElixir.Speed.TicketManager, {:try_generate_ticket, {plate, road}})
+  @spec try_generate_ticket(CameraRecord.t()) :: :ok
+  def try_generate_ticket(camera_record) do
+    GenServer.cast(ProtohackerElixir.Speed.TicketManager, {:try_generate_ticket, camera_record})
   end
 
-  def handle_cast({:try_generate_ticket, {plate, road}}, state) do
+  def handle_cast({:try_generate_ticket, camera_record}, state) do
     # 这里可以根据实际需求来决定是否生成罚单
-    tickets = Generator.try_generate_ticket(plate, road)
+    tickets = Generator.try_generate_ticket(camera_record)
     Client.issue_ticket(tickets)
     {:noreply, state}
   end
