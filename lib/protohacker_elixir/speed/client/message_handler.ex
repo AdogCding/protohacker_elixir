@@ -63,7 +63,19 @@ defmodule ProtohackerElixir.Speed.Client.MessageHandler do
             Database.TicketDbServer.query_ticket_by_road(r)
             |> Enum.filter(fn ticket -> ticket.is_issued == false end)
 
-          Registry.register(ProtohackerElixir.Speed.DispatcherRegistry, r, {self()})
+          dispathers = Registry.lookup(ProtohackerElixir.Speed.DispatcherRegistry, r)
+          dispatcher = dispathers |> List.first() |> elem(0)
+
+          case dispatcher do
+            nil ->
+              Logger.debug("No dispatcher found for road #{r}")
+
+            _ ->
+              # 将罚单发送给调度器
+              for ticket <- tickets_of_road do
+                send(dispatcher, {:issue_ticket, ticket})
+              end
+          end
         end
 
       _ ->
